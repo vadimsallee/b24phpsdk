@@ -1,5 +1,18 @@
 # b24-php-sdk change log
 
+## Upcoming  1.9.0 - 2026.01.01
+
+### Added
+
+- Added service `Services\Task\Epic\Service\Epic` with support methods,
+  see [tasks.api.scrum.epic.* methods](https://apidocs.bitrix24.com/api-reference/tasks/scrum/epic/index.html):
+    - `add` creates a new epic, with batch calls support
+    - `update` updates an epic, with batch calls support
+    - `list` retrieves a list of epics, with batch calls support
+    - `delete` deletes an epic, with batch calls support
+    - `getFields` retrieves available fields for epics
+
+
 ## 1.8.0 - 2025.11.10
 
 ### Added

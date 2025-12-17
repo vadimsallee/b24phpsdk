@@ -61,6 +61,7 @@ help:
 	@echo "test-integration-sale-payment-item-basket - run PaymentItemBasket integration tests"
 	@echo "test-integration-sale-payment-item-shipment - run PaymentItemShipment integration tests"
 	@echo "test-integration-sale-property-relation - run PropertyRelation integration tests"
+	@echo "test-integration-scope-task-scrum-epic - run Task Scrum Epic integration tests"
 
 
 .PHONY: docker-init
@@ -213,6 +214,10 @@ test-integration-scope-ai-admin:
 .PHONY: test-integration-scope-log
 test-integration-scope-log:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_log
+
+.PHONY: test-integration-scope-task-scrum-epic
+test-integration-scope-task-scrum-epic:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_task_scrum_epic
 
 .PHONY: test-integration-scope-sale
 test-integration-scope-sale:

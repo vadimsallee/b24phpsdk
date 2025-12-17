@@ -135,4 +135,21 @@ class TaskServiceBuilder extends AbstractServiceBuilder
         return $this->serviceCache[__METHOD__];
     }
 
+    public function epic(): Scrum\Epic\Service\Epic
+    {
+        if (!isset($this->serviceCache[__METHOD__])) {
+            $batch = new Scrum\Epic\Batch(
+                $this->core,
+                $this->log
+            );
+            $this->serviceCache[__METHOD__] = new Scrum\Epic\Service\Epic(
+                new Scrum\Epic\Service\Batch($batch, $this->log),
+                $this->core,
+                $this->log
+            );
+        }
+
+        return $this->serviceCache[__METHOD__];
+    }
+
 }
