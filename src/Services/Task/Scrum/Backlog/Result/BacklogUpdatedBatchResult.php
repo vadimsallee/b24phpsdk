@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Task\Scrum\Epic\Result;
+namespace Bitrix24\SDK\Services\Task\Scrum\Backlog\Result;
 
 use Bitrix24\SDK\Core\Contracts\UpdatedItemResultInterface;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Response\DTO\ResponseData;
 
 /**
- * Class EpicUpdatedBatchResult
+ * Class BacklogUpdatedBatchResult
  *
- * Represents the result of batch updating epics
+ * Represents the result of batch updating backlog items
  *
- * @package Bitrix24\SDK\Services\Task\Scrum\Epic\Result
+ * @package Bitrix24\SDK\Services\Task\Scrum\Backlog\Result
  */
-class EpicUpdatedBatchResult implements UpdatedItemResultInterface
+class BacklogUpdatedBatchResult implements UpdatedItemResultInterface
 {
     public function __construct(private readonly ResponseData $responseData)
     {
@@ -44,23 +44,18 @@ class EpicUpdatedBatchResult implements UpdatedItemResultInterface
     {
         $result = $this->getResponseData()->getResult();
         // Default to false if we can't determine success
-        // If we get epic data back, it means update was successful
+        // If we get backlog item data back, it means update was successful
         return is_array($result) && isset($result['id']);
     }
 
     /**
-     * Get the updated epic data if available in batch response
+     * Get the updated backlog item data from the batch response
      *
      * @throws BaseException
      */
-    public function getEpic(): ?EpicItemResult
+    public function getBacklogItem(): BacklogItemResult
     {
         $result = $this->getResponseData()->getResult();
-
-        if (isset($result['id'])) {
-            return new EpicItemResult($result);
-        }
-
-        return null;
+        return new BacklogItemResult($result);
     }
 }

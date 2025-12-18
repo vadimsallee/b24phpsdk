@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Task\Scrum\Epic\Result;
+namespace Bitrix24\SDK\Services\Task\Scrum\Backlog\Result;
 
-use Bitrix24\SDK\Core\Contracts\UpdatedItemResultInterface;
+use Bitrix24\SDK\Core\Contracts\AddedItemIdResultInterface;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Response\DTO\ResponseData;
 
 /**
- * Class EpicUpdatedBatchResult
+ * Class BacklogAddedBatchResult
  *
- * Represents the result of batch updating epics
+ * Represents the result of batch adding backlog items
  *
- * @package Bitrix24\SDK\Services\Task\Scrum\Epic\Result
+ * @package Bitrix24\SDK\Services\Task\Scrum\Backlog\Result
  */
-class EpicUpdatedBatchResult implements UpdatedItemResultInterface
+class BacklogAddedBatchResult implements AddedItemIdResultInterface
 {
     public function __construct(private readonly ResponseData $responseData)
     {
@@ -36,31 +36,29 @@ class EpicUpdatedBatchResult implements UpdatedItemResultInterface
     }
 
     /**
-     * Check if the update operation was successful
+     * Get the ID of the added backlog item
      *
      * @throws BaseException
      */
-    public function isSuccess(): bool
-    {
-        $result = $this->getResponseData()->getResult();
-        // Default to false if we can't determine success
-        // If we get epic data back, it means update was successful
-        return is_array($result) && isset($result['id']);
-    }
-
-    /**
-     * Get the updated epic data if available in batch response
-     *
-     * @throws BaseException
-     */
-    public function getEpic(): ?EpicItemResult
+    public function getId(): int
     {
         $result = $this->getResponseData()->getResult();
 
         if (isset($result['id'])) {
-            return new EpicItemResult($result);
+            return (int)$result['id'];
         }
 
-        return null;
+        throw new BaseException('Unable to get backlog item ID from batch response');
+    }
+
+    /**
+     * Get the full backlog item data from the batch response
+     *
+     * @throws BaseException
+     */
+    public function getBacklogItem(): BacklogItemResult
+    {
+        $result = $this->getResponseData()->getResult();
+        return new BacklogItemResult($result);
     }
 }

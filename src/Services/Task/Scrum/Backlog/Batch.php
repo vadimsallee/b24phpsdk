@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Task\Scrum\Epic;
+namespace Bitrix24\SDK\Services\Task\Scrum\Backlog;
 
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Exceptions\InvalidArgumentException;
@@ -21,12 +21,12 @@ use Generator;
 /**
  * Class Batch
  *
- * @package Bitrix24\SDK\Services\Task\Scrum\Epic
+ * @package Bitrix24\SDK\Services\Task\Scrum\Backlog
  */
 class Batch extends \Bitrix24\SDK\Core\Batch
 {
     /**
-     * Delete entity items with batch call for epics
+     * Delete entity items with batch call for backlog items
      *
      *
      * @return Generator<int, ResponseData>|ResponseData[]
@@ -52,7 +52,7 @@ class Batch extends \Bitrix24\SDK\Core\Batch
                 if (!is_int($itemId)) {
                     throw new InvalidArgumentException(
                         sprintf(
-                            'invalid type «%s» of epic id «%s» at position %s, epic id must be integer type',
+                            'invalid type «%s» of backlog item id «%s» at position %s, backlog item id must be integer type',
                             gettype($itemId),
                             $itemId,
                             $cnt
@@ -60,7 +60,7 @@ class Batch extends \Bitrix24\SDK\Core\Batch
                     );
                 }
 
-                // For epics API, use 'id' parameter instead of 'ID'
+                // For backlog API, use 'id' parameter instead of 'ID'
                 $this->registerCommand($apiMethod, ['id' => $itemId]);
             }
 
@@ -69,7 +69,7 @@ class Batch extends \Bitrix24\SDK\Core\Batch
                 yield $cnt => $deletedItemResult;
             }
         } catch (InvalidArgumentException $exception) {
-            $errorMessage = sprintf('batch delete epics: %s', $exception->getMessage());
+            $errorMessage = sprintf('batch delete backlog items: %s', $exception->getMessage());
             $this->logger->error(
                 $errorMessage,
                 [
@@ -78,7 +78,7 @@ class Batch extends \Bitrix24\SDK\Core\Batch
             );
             throw $exception;
         } catch (\Throwable $exception) {
-            $errorMessage = sprintf('batch delete epics: %s', $exception->getMessage());
+            $errorMessage = sprintf('batch delete backlog items: %s', $exception->getMessage());
             $this->logger->error(
                 $errorMessage,
                 [

@@ -40,8 +40,11 @@ class BatchTest extends TestCase
     use CustomBitrix24Assertions;
 
     private Batch $epicBatchService;
+
     private ServiceBuilder $serviceBuilder;
+
     private static ?int $testGroupId = null;
+
     private static array $createdEpicIds = [];
 
     /**
@@ -55,11 +58,11 @@ class BatchTest extends TestCase
         if (self::$testGroupId === null) {
             // Create a test group with SCRUM_MASTER_ID to make it a Scrum
             $core = Fabric::getCore();
-            
+
             // Get current user ID for SCRUM_MASTER
             $currentUser = $core->call('user.current');
             $currentUserId = (int)$currentUser->getResponseData()->getResult()['ID'];
-            
+
             $groupResult = $core->call('sonet_group.create', [
                 'NAME' => 'Test Scrum Group for Epic Batch Tests ' . uniqid('batch_', true),
                 'DESCRIPTION' => 'Auto-generated test group for Epic batch service integration tests',
@@ -67,10 +70,10 @@ class BatchTest extends TestCase
                 'OPENED' => 'N',
                 'SCRUM_MASTER_ID' => $currentUserId, // Use current user as Scrum master
             ]);
-            
+
             self::$testGroupId = (int)$groupResult->getResponseData()->getResult()[0];
         }
-        
+
         return self::$testGroupId;
     }
 
@@ -81,17 +84,17 @@ class BatchTest extends TestCase
     {
         try {
             $core = Fabric::getCore();
-            
+
             // Clean up all tracked epics
             foreach (self::$createdEpicIds as $key => $epicId) {
                 try {
                     $core->call('tasks.api.scrum.epic.delete', ['id' => $epicId]);
                     unset(self::$createdEpicIds[$key]); // Remove from tracking
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     // Continue with other epics
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Ignore cleanup errors
         }
     }
@@ -105,6 +108,7 @@ class BatchTest extends TestCase
         $this->serviceBuilder = Fabric::getServiceBuilder();
         $this->epicBatchService = $this->serviceBuilder->getTaskScope()->epic()->batch;
     }
+
     /**
      * Clean up after each test method
      */
@@ -113,6 +117,7 @@ class BatchTest extends TestCase
         // Force cleanup of any remaining epics after each test
         $this->cleanupEpics();
     }
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -120,7 +125,7 @@ class BatchTest extends TestCase
     public function testBatchAdd(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         $epicsData = [
             ['fields' => [
                 'name' => 'Batch Epic 1',
@@ -141,25 +146,25 @@ class BatchTest extends TestCase
                 'color' => '#0000FF',
             ]],
         ];
-        
+
         $addedEpics = [];
         $addedCount = 0;
-        
-        foreach ($this->epicBatchService->add($epicsData) as $key => $addResult) {
+
+        foreach ($this->epicBatchService->add($epicsData) as $addResult) {
             $this->assertIsInt($addResult->getId());
             $this->assertGreaterThan(0, $addResult->getId());
-            
+
             $addedEpics[] = $addResult->getId();
             self::$createdEpicIds[] = $addResult->getId(); // Track for cleanup
             $addedCount++;
         }
-        
+
         $this->assertEquals(count($epicsData), $addedCount);
         $this->assertCount(count($epicsData), $addedEpics);
-        
+
         // Cleanup
-        foreach ($addedEpics as $epicId) {
-            $this->serviceBuilder->getTaskScope()->epic()->delete($epicId);
+        foreach ($addedEpics as $addedEpic) {
+            $this->serviceBuilder->getTaskScope()->epic()->delete($addedEpic);
         }
     }
 
@@ -170,7 +175,7 @@ class BatchTest extends TestCase
     public function testBatchUpdate(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         // First create some epics
         $epic1Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Epic for Update 1',
@@ -178,14 +183,14 @@ class BatchTest extends TestCase
             'groupId' => $groupId,
             'color' => '#FF0000',
         ])->getId();
-        
+
         $epic2Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Epic for Update 2',
             'description' => 'Will be updated',
             'groupId' => $groupId,
             'color' => '#00FF00',
         ])->getId();
-        
+
         $updateData = [
             $epic1Id => [
                 'fields' => [
@@ -202,26 +207,26 @@ class BatchTest extends TestCase
                 ],
             ],
         ];
-        
+
         $updatedCount = 0;
-        foreach ($this->epicBatchService->update($updateData) as $key => $updateResult) {
+        foreach ($this->epicBatchService->update($updateData) as $updateResult) {
             $this->assertTrue($updateResult->isSuccess());
             $updatedCount++;
         }
-        
+
         $this->assertEquals(count($updateData), $updatedCount);
-        
+
         // Verify updates
-        $epic1 = $this->serviceBuilder->getTaskScope()->epic()->get($epic1Id)->epic();
-        $this->assertEquals('Updated Batch Epic 1', $epic1->name);
-        $this->assertEquals('Updated via batch operation', $epic1->description);
-        $this->assertEquals('#FFFF00', $epic1->color);
-        
+        $epicItemResult = $this->serviceBuilder->getTaskScope()->epic()->get($epic1Id)->epic();
+        $this->assertEquals('Updated Batch Epic 1', $epicItemResult->name);
+        $this->assertEquals('Updated via batch operation', $epicItemResult->description);
+        $this->assertEquals('#FFFF00', $epicItemResult->color);
+
         $epic2 = $this->serviceBuilder->getTaskScope()->epic()->get($epic2Id)->epic();
         $this->assertEquals('Updated Batch Epic 2', $epic2->name);
         $this->assertEquals('Updated via batch operation', $epic2->description);
         $this->assertEquals('#FF00FF', $epic2->color);
-        
+
         // Cleanup
         $this->serviceBuilder->getTaskScope()->epic()->delete($epic1Id);
         $this->serviceBuilder->getTaskScope()->epic()->delete($epic2Id);
@@ -234,42 +239,42 @@ class BatchTest extends TestCase
     public function testBatchDelete(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         // Create epics to delete
         $epic1Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Epic for Delete 1',
             'description' => 'Will be deleted',
             'groupId' => $groupId,
         ])->getId();
-        
+
         $epic2Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Epic for Delete 2',
             'description' => 'Will be deleted',
             'groupId' => $groupId,
         ])->getId();
-        
+
         $deleteData = [$epic1Id, $epic2Id];
-        
+
         $deletedCount = 0;
-        foreach ($this->epicBatchService->delete($deleteData) as $key => $deleteResult) {
+        foreach ($this->epicBatchService->delete($deleteData) as $deleteResult) {
             $this->assertTrue($deleteResult->isSuccess());
             $deletedCount++;
         }
-        
+
         $this->assertEquals(count($deleteData), $deletedCount);
-        
+
         // Verify deletion - should throw exceptions
         try {
             $this->serviceBuilder->getTaskScope()->epic()->get($epic1Id);
             $this->fail('Expected exception when getting deleted epic 1');
-        } catch (BaseException $e) {
+        } catch (BaseException) {
             $this->assertTrue(true);
         }
-        
+
         try {
             $this->serviceBuilder->getTaskScope()->epic()->get($epic2Id);
             $this->fail('Expected exception when getting deleted epic 2');
-        } catch (BaseException $e) {
+        } catch (BaseException) {
             $this->assertTrue(true);
         }
     }
@@ -281,7 +286,7 @@ class BatchTest extends TestCase
     public function testBatchList(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         // Create test epics
         $epic1Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Batch List Epic 1',
@@ -289,26 +294,26 @@ class BatchTest extends TestCase
             'groupId' => $groupId,
             'color' => '#123456',
         ])->getId();
-        
+
         $epic2Id = $this->serviceBuilder->getTaskScope()->epic()->add([
             'name' => 'Batch List Epic 2',
             'description' => 'For batch list testing',
             'groupId' => $groupId,
             'color' => '#654321',
         ])->getId();
-        
+
         $foundEpics = [];
-        foreach ($this->epicBatchService->list([], ['GROUP_ID' => $groupId]) as $key => $epic) {
+        foreach ($this->epicBatchService->list([], ['GROUP_ID' => $groupId]) as $epic) {
             $this->assertNotNull($epic->id);
             $this->assertNotNull($epic->name);
             $this->assertEquals($groupId, $epic->groupId);
-            
+
             $foundEpics[] = $epic->id;
         }
-        
+
         $this->assertContains($epic1Id, $foundEpics);
         $this->assertContains($epic2Id, $foundEpics);
-        
+
         // Cleanup
         $this->serviceBuilder->getTaskScope()->epic()->delete($epic1Id);
         $this->serviceBuilder->getTaskScope()->epic()->delete($epic2Id);
@@ -324,16 +329,16 @@ class BatchTest extends TestCase
     {
         try {
             $core = Fabric::getCore();
-            
+
             // Clean up all created epics (final cleanup)
-            foreach (self::$createdEpicIds as $epicId) {
+            foreach (self::$createdEpicIds as $createdEpicId) {
                 try {
-                    $core->call('tasks.api.scrum.epic.delete', ['id' => $epicId]);
-                } catch (\Exception $e) {
+                    $core->call('tasks.api.scrum.epic.delete', ['id' => $createdEpicId]);
+                } catch (\Exception) {
                     // Ignore individual epic deletion errors
                 }
             }
-            
+
             // Clean up test group
             if (self::$testGroupId !== null) {
                 try {
@@ -346,13 +351,13 @@ class BatchTest extends TestCase
                     error_log("Failed to delete test group " . self::$testGroupId . ": " . $e->getMessage());
                 }
             }
-            
+
             // Clear epic tracking
             self::$createdEpicIds = [];
-            
-        } catch (\Exception $e) {
+
+        } catch (\Exception $exception) {
             // Log error but don't break test results
-            error_log("Failed cleanup in tearDownAfterClass: " . $e->getMessage());
+            error_log("Failed cleanup in tearDownAfterClass: " . $exception->getMessage());
         }
     }
 }

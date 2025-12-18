@@ -34,12 +34,12 @@ class EpicUpdatedResult extends AbstractResult implements UpdatedItemResultInter
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
-        if (is_array($result) && isset($result['id'])) {
+
+        if (isset($result['id'])) {
             // If we get epic data back, it means update was successful
             return true;
         }
-        
+
         // Check HTTP response status as fallback
         return $this->getCoreResponse()->getHttpResponse()->getStatusCode() === 200;
     }
@@ -52,11 +52,11 @@ class EpicUpdatedResult extends AbstractResult implements UpdatedItemResultInter
     public function getEpic(): EpicItemResult
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
-        if (is_array($result) && isset($result['id'])) {
+
+        if (isset($result['id'])) {
             return new EpicItemResult($result);
         }
-        
+
         throw new BaseException('Unable to get updated epic data from response');
     }
 }

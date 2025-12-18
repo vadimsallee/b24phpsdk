@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Task\Scrum\Epic\Result;
+namespace Bitrix24\SDK\Services\Task\Scrum\Backlog\Result;
 
 use Bitrix24\SDK\Core\Contracts\DeletedItemResultInterface;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Response\DTO\ResponseData;
 
 /**
- * Class EpicDeletedBatchResult
+ * Class BacklogDeletedBatchResult
  *
- * Represents the result of batch deleting epics
+ * Represents the result of batch deleting backlog items
  *
- * @package Bitrix24\SDK\Services\Task\Scrum\Epic\Result
+ * @package Bitrix24\SDK\Services\Task\Scrum\Backlog\Result
  */
-class EpicDeletedBatchResult implements DeletedItemResultInterface
+class BacklogDeletedBatchResult implements DeletedItemResultInterface
 {
     public function __construct(private readonly ResponseData $responseData)
     {
@@ -43,7 +43,7 @@ class EpicDeletedBatchResult implements DeletedItemResultInterface
     public function isSuccess(): bool
     {
         $result = $this->getResponseData()->getResult();
-        // For Epic delete, successful deletion returns an empty array
+        // For Backlog delete, successful deletion returns an empty array
         // Default to false if we can't determine success
         return $result === [];
     }

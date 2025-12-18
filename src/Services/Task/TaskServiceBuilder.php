@@ -152,4 +152,21 @@ class TaskServiceBuilder extends AbstractServiceBuilder
         return $this->serviceCache[__METHOD__];
     }
 
+    public function backlog(): Scrum\Backlog\Service\Backlog
+    {
+        if (!isset($this->serviceCache[__METHOD__])) {
+            $batch = new Scrum\Backlog\Batch(
+                $this->core,
+                $this->log
+            );
+            $this->serviceCache[__METHOD__] = new Scrum\Backlog\Service\Backlog(
+                new Scrum\Backlog\Service\Batch($batch, $this->log),
+                $this->core,
+                $this->log
+            );
+        }
+
+        return $this->serviceCache[__METHOD__];
+    }
+
 }

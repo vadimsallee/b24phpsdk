@@ -34,25 +34,25 @@ class EpicFieldsResult extends AbstractResult
     public function getFieldsDescription(): array
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Epic API must return fields nested under 'fields' key
         if (!is_array($result)) {
             throw new BaseException('Epic fields API returned invalid response format');
         }
-        
+
         if (!isset($result['fields']) || !is_array($result['fields'])) {
             throw new BaseException('Epic fields API response is missing fields data');
         }
-        
+
         $fields = $result['fields'];
-        
+
         // Temporary workaround: API doesn't return 'id' field description, so we add it manually
         if (!isset($fields['id'])) {
             $fields['id'] = [
                 'type' => 'integer',
             ];
         }
-        
+
         return $fields;
     }
 }

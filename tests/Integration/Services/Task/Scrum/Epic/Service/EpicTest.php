@@ -44,8 +44,11 @@ class EpicTest extends TestCase
     use CustomBitrix24Assertions;
 
     private Epic $epicService;
+
     private ServiceBuilder $serviceBuilder;
+
     private static ?int $testGroupId = null;
+
     private static array $createdEpicIds = [];
 
     /**
@@ -59,11 +62,11 @@ class EpicTest extends TestCase
         if (self::$testGroupId === null) {
             // Create a test group with SCRUM_MASTER_ID to make it a Scrum
             $core = Fabric::getCore();
-            
+
             // Get current user ID for SCRUM_MASTER
             $currentUser = $core->call('user.current');
             $currentUserId = (int)$currentUser->getResponseData()->getResult()['ID'];
-            
+
             $groupResult = $core->call('sonet_group.create', [
                 'NAME' => 'Test Scrum Group for Epic Tests ' . uniqid('epic_', true),
                 'DESCRIPTION' => 'Auto-generated test group for Epic service integration tests',
@@ -71,10 +74,10 @@ class EpicTest extends TestCase
                 'OPENED' => 'N',
                 'SCRUM_MASTER_ID' => $currentUserId, // Use current user as Scrum master
             ]);
-            
+
             self::$testGroupId = (int)$groupResult->getResponseData()->getResult()[0];
         }
-        
+
         return self::$testGroupId;
     }
 
@@ -85,17 +88,17 @@ class EpicTest extends TestCase
     {
         try {
             $core = Fabric::getCore();
-            
+
             // Clean up all tracked epics
             foreach (self::$createdEpicIds as $key => $epicId) {
                 try {
                     $core->call('tasks.api.scrum.epic.delete', ['id' => $epicId]);
                     unset(self::$createdEpicIds[$key]); // Remove from tracking
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                     // Continue with other epics
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Ignore cleanup errors
         }
     }
@@ -145,16 +148,16 @@ class EpicTest extends TestCase
      */
     public function testFields(): void
     {
-        $fieldsResult = $this->epicService->getFields();
-        
+        $epicFieldsResult = $this->epicService->getFields();
+
         // Get the raw result to examine structure
-        $this->assertNotNull($fieldsResult);
-        
+        $this->assertNotNull($epicFieldsResult);
+
         // Check if we can access field descriptions
-        $fields = $fieldsResult->getFieldsDescription();
+        $fields = $epicFieldsResult->getFieldsDescription();
         $this->assertIsArray($fields);
         $this->assertNotEmpty($fields);
-        
+
         // Check expected Epic fields based on API documentation
         $this->assertArrayHasKey('name', $fields);
         $this->assertArrayHasKey('description', $fields);
@@ -163,7 +166,7 @@ class EpicTest extends TestCase
         $this->assertArrayHasKey('files', $fields);
         $this->assertArrayHasKey('createdBy', $fields);
         $this->assertArrayHasKey('modifiedBy', $fields);
-        
+
         // Verify field types
         $this->assertEquals('string', $fields['name']['type']);
         $this->assertEquals('string', $fields['description']['type']);
@@ -181,52 +184,52 @@ class EpicTest extends TestCase
     public function testCrudOperations(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         // Test add epic
-        $addResult = $this->epicService->add([
+        $epicAddedResult = $this->epicService->add([
             'name' => 'Test Epic',
             'description' => 'This is a test epic for integration testing',
             'groupId' => $groupId,
             'color' => '#FF0000',
         ]);
-        
-        $epicId = $addResult->getId();
+
+        $epicId = $epicAddedResult->getId();
         self::$createdEpicIds[] = $epicId; // Track for cleanup
         $this->assertIsInt($epicId);
         $this->assertGreaterThan(0, $epicId);
-        
+
         // Test get epic
-        $getResult = $this->epicService->get($epicId);
-        $epic = $getResult->epic();
-        
+        $epicResult = $this->epicService->get($epicId);
+        $epic = $epicResult->epic();
+
         $this->assertInstanceOf(EpicItemResult::class, $epic);
         $this->assertEquals($epicId, $epic->id);
         $this->assertEquals('Test Epic', $epic->name);
         $this->assertEquals('This is a test epic for integration testing', $epic->description);
         $this->assertEquals($groupId, $epic->groupId);
         $this->assertEquals('#FF0000', $epic->color);
-        
+
         // Test update epic
-        $updateResult = $this->epicService->update($epicId, [
+        $epicUpdatedResult = $this->epicService->update($epicId, [
             'name' => 'Updated Test Epic',
             'description' => 'Updated description for test epic',
             'color' => '#00FF00',
         ]);
-        
-        $this->assertTrue($updateResult->isSuccess());
-        
+
+        $this->assertTrue($epicUpdatedResult->isSuccess());
+
         // Verify update
         $getUpdatedResult = $this->epicService->get($epicId);
-        $updatedEpic = $getUpdatedResult->epic();
-        
-        $this->assertEquals('Updated Test Epic', $updatedEpic->name);
-        $this->assertEquals('Updated description for test epic', $updatedEpic->description);
-        $this->assertEquals('#00FF00', $updatedEpic->color);
-        
+        $epicItemResult = $getUpdatedResult->epic();
+
+        $this->assertEquals('Updated Test Epic', $epicItemResult->name);
+        $this->assertEquals('Updated description for test epic', $epicItemResult->description);
+        $this->assertEquals('#00FF00', $epicItemResult->color);
+
         // Test list epics
-        $listResult = $this->epicService->list([], ['GROUP_ID' => $groupId]);
-        $epics = $listResult->getEpics();
-        
+        $epicsResult = $this->epicService->list([], ['GROUP_ID' => $groupId]);
+        $epics = $epicsResult->getEpics();
+
         $this->assertNotEmpty($epics);
         $foundEpic = null;
         foreach ($epics as $epic) {
@@ -235,19 +238,19 @@ class EpicTest extends TestCase
                 break;
             }
         }
-        
+
         $this->assertNotNull($foundEpic);
         $this->assertEquals('Updated Test Epic', $foundEpic->name);
-        
+
         // Test delete epic
-        $deleteResult = $this->epicService->delete($epicId);
-        $this->assertTrue($deleteResult->isSuccess());
-        
+        $epicDeletedResult = $this->epicService->delete($epicId);
+        $this->assertTrue($epicDeletedResult->isSuccess());
+
         // Verify deletion - should throw exception or return empty result
         try {
             $this->epicService->get($epicId);
             $this->fail('Expected exception when getting deleted epic');
-        } catch (BaseException $e) {
+        } catch (BaseException) {
             // Expected behavior - epic not found
             $this->assertTrue(true);
         }
@@ -260,7 +263,7 @@ class EpicTest extends TestCase
     public function testListWithFilters(): void
     {
         $groupId = $this->getTestGroupId();
-        
+
         // Create multiple epics
         $epic1Id = $this->epicService->add([
             'name' => 'Epic Filter Test 1',
@@ -269,7 +272,7 @@ class EpicTest extends TestCase
             'color' => '#FF0000',
         ])->getId();
         self::$createdEpicIds[] = $epic1Id; // Track for cleanup
-        
+
         $epic2Id = $this->epicService->add([
             'name' => 'Epic Filter Test 2',
             'description' => 'Second epic for filter testing',
@@ -277,28 +280,28 @@ class EpicTest extends TestCase
             'color' => '#00FF00',
         ])->getId();
         self::$createdEpicIds[] = $epic2Id; // Track for cleanup
-        
+
         // Test list with group filter
-        $listResult = $this->epicService->list([], ['GROUP_ID' => $groupId]);
-        $epics = $listResult->getEpics();
-        
+        $epicsResult = $this->epicService->list([], ['GROUP_ID' => $groupId]);
+        $epics = $epicsResult->getEpics();
+
         $this->assertGreaterThanOrEqual(2, count($epics));
-        
+
         // Verify all returned epics belong to the correct group
         foreach ($epics as $epic) {
             $this->assertEquals($groupId, $epic->groupId);
         }
-        
+
         // Test list with select fields
         $listSelectResult = $this->epicService->list([], ['GROUP_ID' => $groupId], ['ID', 'NAME']);
         $selectedEpics = $listSelectResult->getEpics();
-        
+
         $this->assertNotEmpty($selectedEpics);
-        foreach ($selectedEpics as $epic) {
-            $this->assertNotNull($epic->id);
-            $this->assertNotNull($epic->name);
+        foreach ($selectedEpics as $selectedEpic) {
+            $this->assertNotNull($selectedEpic->id);
+            $this->assertNotNull($selectedEpic->name);
         }
-        
+
         // Cleanup
         $this->epicService->delete($epic1Id);
         $this->epicService->delete($epic2Id);
@@ -314,16 +317,16 @@ class EpicTest extends TestCase
     {
         try {
             $core = Fabric::getCore();
-            
+
             // Clean up all created epics (final cleanup)
-            foreach (self::$createdEpicIds as $epicId) {
+            foreach (self::$createdEpicIds as $createdEpicId) {
                 try {
-                    $core->call('tasks.api.scrum.epic.delete', ['id' => $epicId]);
-                } catch (\Exception $e) {
+                    $core->call('tasks.api.scrum.epic.delete', ['id' => $createdEpicId]);
+                } catch (\Exception) {
                     // Ignore individual epic deletion errors
                 }
             }
-            
+
             // Clean up test group
             if (self::$testGroupId !== null) {
                 try {
@@ -336,13 +339,13 @@ class EpicTest extends TestCase
                     error_log("Failed to delete test group " . self::$testGroupId . ": " . $e->getMessage());
                 }
             }
-            
+
             // Clear epic tracking
             self::$createdEpicIds = [];
-            
-        } catch (\Exception $e) {
+
+        } catch (\Exception $exception) {
             // Log error but don't break test results
-            error_log("Failed cleanup in tearDownAfterClass: " . $e->getMessage());
+            error_log("Failed cleanup in tearDownAfterClass: " . $exception->getMessage());
         }
     }
 }

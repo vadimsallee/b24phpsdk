@@ -43,11 +43,11 @@ class EpicAddedBatchResult implements AddedItemIdResultInterface
     public function getId(): int
     {
         $result = $this->getResponseData()->getResult();
-        
-        if (is_array($result) && isset($result['id'])) {
+
+        if (isset($result['id'])) {
             return (int)$result['id'];
         }
-        
+
         throw new BaseException('Unable to get epic ID from batch response');
     }
 
@@ -59,11 +59,6 @@ class EpicAddedBatchResult implements AddedItemIdResultInterface
     public function getEpic(): EpicItemResult
     {
         $result = $this->getResponseData()->getResult();
-        
-        if (is_array($result)) {
-            return new EpicItemResult($result);
-        }
-        
-        throw new BaseException('Unable to get epic data from batch response');
+        return new EpicItemResult($result);
     }
 }

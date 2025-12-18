@@ -11,23 +11,23 @@
 
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Task\Scrum\Epic\Result;
+namespace Bitrix24\SDK\Services\Task\Scrum\Backlog\Result;
 
 use Bitrix24\SDK\Core\Contracts\AddedItemIdResultInterface;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Result\AbstractResult;
 
 /**
- * Class EpicAddedResult
+ * Class BacklogAddedResult
  *
- * Represents the result of adding an epic
+ * Represents the result of adding a backlog
  *
- * @package Bitrix24\SDK\Services\Task\Scrum\Epic\Result
+ * @package Bitrix24\SDK\Services\Task\Scrum\Backlog\Result
  */
-class EpicAddedResult extends AbstractResult implements AddedItemIdResultInterface
+class BacklogAddedResult extends AbstractResult implements AddedItemIdResultInterface
 {
     /**
-     * Get the ID of the added epic
+     * Get the ID of the added backlog
      *
      * @throws BaseException
      */
@@ -39,17 +39,17 @@ class EpicAddedResult extends AbstractResult implements AddedItemIdResultInterfa
             return (int)$result['id'];
         }
 
-        throw new BaseException('Unable to get epic ID from response');
+        throw new BaseException('Unable to get backlog ID from response');
     }
 
     /**
-     * Get the full epic data from the response
+     * Get the full backlog data from the response
      *
      * @throws BaseException
      */
-    public function getEpic(): EpicItemResult
+    public function getBacklog(): BacklogItemResult
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        return new EpicItemResult($result);
+        return new BacklogItemResult($result);
     }
 }
