@@ -43,6 +43,19 @@ class BacklogAddedResult extends AbstractResult implements AddedItemIdResultInte
     }
 
     /**
+     * Check if the operation was successful
+     */
+    public function isSuccess(): bool
+    {
+        try {
+            $result = $this->getCoreResponse()->getResponseData()->getResult();
+            return isset($result['id']) && is_numeric($result['id']) && $result['id'] > 0;
+        } catch (\Exception) {
+            return false;
+        }
+    }
+
+    /**
      * Get the full backlog data from the response
      *
      * @throws BaseException

@@ -45,8 +45,9 @@ class Backlog extends AbstractService
      *
      * @link https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-add.html
      *
-     * @param int   $groupId Group (scrum) identifier
-     * @param array $fields  Backlog fields for creation (optional, usually empty)
+     * @param int $groupId Group (scrum) identifier
+     * @param int $createdBy User identifier who creates the backlog
+     * @param int|null $modifiedBy User identifier who modified the backlog (optional)
      *
      * @throws BaseException
      * @throws TransportException
@@ -56,15 +57,21 @@ class Backlog extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-add.html',
         'Adds a backlog to Scrum.'
     )]
-    public function add(int $groupId, array $fields = []): BacklogAddedResult
+    public function add(int $groupId, int $createdBy, ?int $modifiedBy = null): BacklogAddedResult
     {
-        $params = ['groupId' => $groupId];
-        if ($fields !== []) {
-            $params['fields'] = $fields;
+        $fields = [
+            'groupId' => $groupId,
+            'createdBy' => $createdBy,
+        ];
+
+        if ($modifiedBy !== null) {
+            $fields['modifiedBy'] = $modifiedBy;
         }
 
         return new BacklogAddedResult(
-            $this->core->call('tasks.api.scrum.backlog.add', $params)
+            $this->core->call('tasks.api.scrum.backlog.add', [
+                'fields' => $fields
+            ])
         );
     }
 
@@ -73,8 +80,8 @@ class Backlog extends AbstractService
      *
      * @link https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-update.html
      *
-     * @param int   $groupId Group (scrum) identifier
-     * @param array $fields  Backlog fields for update
+     * @param int   $backlogId Backlog identifier (not groupId!)
+     * @param array $fields    Backlog fields for update
      *
      * @throws BaseException
      * @throws TransportException
@@ -84,11 +91,11 @@ class Backlog extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-update.html',
         'Updates a backlog in Scrum.'
     )]
-    public function update(int $groupId, array $fields): BacklogUpdatedResult
+    public function update(int $backlogId, array $fields): BacklogUpdatedResult
     {
         return new BacklogUpdatedResult(
             $this->core->call('tasks.api.scrum.backlog.update', [
-                'groupId' => $groupId,
+                'id' => $backlogId, // API expects backlogId, not groupId
                 'fields' => $fields,
             ])
         );
@@ -113,7 +120,7 @@ class Backlog extends AbstractService
     {
         return new BacklogResult(
             $this->core->call('tasks.api.scrum.backlog.get', [
-                'groupId' => $groupId,
+                'id' => $groupId, // API expects 'id' parameter but it's actually groupId
             ])
         );
     }
@@ -124,7 +131,7 @@ class Backlog extends AbstractService
      *
      * @link https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-delete.html
      *
-     * @param int $groupId Group (scrum) identifier
+     * @param int $backlogId Backlog identifier (not groupId!)
      *
      * @throws BaseException
      * @throws TransportException
@@ -134,11 +141,11 @@ class Backlog extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-delete.html',
         'Deletes a backlog.'
     )]
-    public function delete(int $groupId): BacklogDeletedResult
+    public function delete(int $backlogId): BacklogDeletedResult
     {
         return new BacklogDeletedResult(
             $this->core->call('tasks.api.scrum.backlog.delete', [
-                'groupId' => $groupId,
+                'id' => $backlogId, // API expects backlogId, not groupId
             ])
         );
     }
@@ -161,5 +168,38 @@ class Backlog extends AbstractService
         return new BacklogFieldsResult(
             $this->core->call('tasks.api.scrum.backlog.getFields')
         );
+    }
+
+    // Helper methods for working with groupId instead of backlogId
+
+    /**
+     * Updates a backlog by group ID.
+     * This is a convenience method that first gets the backlog by group ID, then updates it.
+     *
+     * @param int   $groupId Group (scrum) identifier
+     * @param array $fields  Backlog fields for update
+     *
+     * @throws BaseException
+     * @throws TransportException
+     */
+    public function updateByGroupId(int $groupId, array $fields): BacklogUpdatedResult
+    {
+        $backlog = $this->get($groupId)->backlog();
+        return $this->update($backlog->id, $fields);
+    }
+
+    /**
+     * Deletes a backlog by group ID.
+     * This is a convenience method that first gets the backlog by group ID, then deletes it.
+     *
+     * @param int $groupId Group (scrum) identifier
+     *
+     * @throws BaseException
+     * @throws TransportException
+     */
+    public function deleteByGroupId(int $groupId): BacklogDeletedResult
+    {
+        $backlog = $this->get($groupId)->backlog();
+        return $this->delete($backlog->id);
     }
 }

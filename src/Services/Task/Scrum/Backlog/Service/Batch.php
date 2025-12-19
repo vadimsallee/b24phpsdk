@@ -100,27 +100,4 @@ class Batch
         }
     }
 
-    /**
-     * Batch list method for backlog items
-     *
-     * @param array $order  Sort order
-     * @param array $filter Filter criteria
-     * @param array $select Fields to select
-     * @param int|null $limit Number of items to select
-     *
-     * @return Generator<int, BacklogItemResult, mixed, mixed>
-     *
-     * @throws BaseException
-     */
-    #[ApiBatchMethodMetadata(
-        'tasks.api.scrum.backlog.list',
-        'https://apidocs.bitrix24.com/api-reference/sonet-group/scrum/backlog/tasks-api-scrum-backlog-list.html',
-        'Retrieves a list of backlog items from Scrum.'
-    )]
-    public function list(array $order = [], array $filter = [], array $select = [], ?int $limit = null): Generator
-    {
-        foreach ($this->batch->getTraversableList('tasks.api.scrum.backlog.list', $order, $filter, $select, $limit) as $key => $value) {
-            yield $key => new BacklogItemResult($value);
-        }
-    }
 }

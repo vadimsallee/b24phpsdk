@@ -5,12 +5,21 @@
 ### Added
 
 - Added service `Services\Task\Epic\Service\Epic` with support methods,
-  see [tasks.api.scrum.epic.* methods](https://apidocs.bitrix24.com/api-reference/tasks/scrum/epic/index.html):
+  see [tasks.api.scrum.epic.* methods](https://github.com/bitrix24/b24phpsdk/issues/334):
     - `add` creates a new epic, with batch calls support
     - `update` updates an epic, with batch calls support
     - `list` retrieves a list of epics, with batch calls support
     - `delete` deletes an epic, with batch calls support
     - `getFields` retrieves available fields for epics
+- Added service `Services\Task\Scrum\Backlog\Service\Backlog` with support methods,
+  see [tasks.api.scrum.backlog.* methods](https://github.com/bitrix24/b24phpsdk/issues/334):
+    - `add` adds a backlog to Scrum, with batch calls support
+    - `update` updates a backlog in Scrum, with batch calls support
+    - `get` retrieves field values of a backlog by group (scrum) id
+    - `delete` deletes a backlog, with batch calls support
+    - `getFields` retrieves available fields of a backlog
+    - `updateByGroupId` updates a backlog by group ID (convenience method)
+    - `deleteByGroupId` deletes a backlog by group ID (convenience method)
 
 
 ## 1.8.0 - 2025.11.10

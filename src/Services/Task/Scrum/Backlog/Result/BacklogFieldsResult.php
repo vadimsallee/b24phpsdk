@@ -39,7 +39,15 @@ class BacklogFieldsResult extends AbstractResult
         if (!is_array($result)) {
             throw new BaseException('Backlog fields API returned invalid response format');
         }
+        
+        $fields = $result['fields'];
+        
+        if (!isset($fields['id'])) {
+            $fields['id'] = [
+                'type' => 'integer',
+            ];
+        }
 
-        return $result;
+        return $fields;
     }
 }
