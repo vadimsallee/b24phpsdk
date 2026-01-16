@@ -24,7 +24,9 @@ use Bitrix24\SDK\Core\Result\AbstractResult;
 class SonetGroupsResult extends AbstractResult
 {
     /**
-     * @return SonetGroupItemResult[]
+     * Returns groups for socialnetwork.api.workgroup.list method
+     *
+     * @return SonetGroupListItemResult[]
      * @throws BaseException
      */
     public function getGroups(): array
@@ -33,17 +35,12 @@ class SonetGroupsResult extends AbstractResult
         $result = $this->getCoreResponse()->getResponseData()->getResult();
 
         // Handle different response formats for socialnetwork.api.workgroup.list
-        $items = [];
         if (isset($result['workgroups']) && is_array($result['workgroups'])) {
             // For socialnetwork.api.workgroup.list
-            $items = $result['workgroups'];
-        } elseif (is_array($result) && !isset($result['workgroups'])) {
-            // For sonet_group.get
-            $items = $result;
-        }
+            foreach ($result['workgroups'] as $item) {
+                $groups[] = new SonetGroupListItemResult($item);
+            }
 
-        foreach ($items as $item) {
-            $groups[] = new SonetGroupItemResult($item);
         }
 
         return $groups;

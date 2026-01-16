@@ -23,7 +23,8 @@ use Bitrix24\SDK\Core\Result\AddedItemResult;
 use Bitrix24\SDK\Core\Result\DeletedItemResult;
 use Bitrix24\SDK\Core\Result\UpdatedItemResult;
 use Bitrix24\SDK\Services\AbstractService;
-use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupItemResult;
+use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupGetItemResult;
+use Bitrix24\SDK\Services\SonetGroup\Result\SonetGetGroupsResult;
 use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupsResult;
 use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupResult;
 use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupUserOperationResult;
@@ -201,7 +202,7 @@ class SonetGroup extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/sonet-group/sonet-group-get.html',
         'Gets list of social network groups (simpler version).'
     )]
-    public function getGroups(array $order = [], array $filter = [], bool $isAdmin = false): SonetGroupsResult
+    public function getGroups(array $order = [], array $filter = [], bool $isAdmin = false): SonetGetGroupsResult
     {
         $params = [];
 
@@ -217,7 +218,7 @@ class SonetGroup extends AbstractService
             $params['IS_ADMIN'] = 'Y';
         }
 
-        return new SonetGroupsResult(
+        return new SonetGetGroupsResult(
             $this->core->call('sonet_group.get', $params)
         );
     }

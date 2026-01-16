@@ -17,19 +17,31 @@ use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Result\AbstractResult;
 
 /**
- * Class SonetGroupResult
+ * Class SonetGetGroupsResult
  *
  * @package Bitrix24\SDK\Services\SonetGroup\Result
  */
-class SonetGroupResult extends AbstractResult
+class SonetGetGroupsResult extends AbstractResult
 {
     /**
+     * Returns groups for socialnetwork.api.workgroup.list method
+     *
+     * @return SonetGroupGetItemResult[]
      * @throws BaseException
      */
-    public function getGroup(): SonetGroupGetItemResult
+    public function getGroups(): array
     {
+        $groups = [];
         $result = $this->getCoreResponse()->getResponseData()->getResult();
 
-        return new SonetGroupGetItemResult($result);
+        if (!isset($result['workgroups'])) {
+            // For sonet_group.get
+            foreach ($result as $item) {
+                $groups[] = new SonetGroupGetItemResult($item);
+            }
+
+        }
+
+        return $groups;
     }
 }
