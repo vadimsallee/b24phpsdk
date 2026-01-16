@@ -15,7 +15,8 @@ namespace Bitrix24\SDK\Tests\Integration\Services\SonetGroup\Service;
 
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Exceptions\TransportException;
-use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupItemResult;
+use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupGetItemResult;
+use Bitrix24\SDK\Services\SonetGroup\Result\SonetGroupListItemResult;
 use Bitrix24\SDK\Services\SonetGroup\Service\SonetGroup;
 use Bitrix24\SDK\Tests\CustomAssertions\CustomBitrix24Assertions;
 use Bitrix24\SDK\Tests\Integration\Factory;
@@ -179,10 +180,10 @@ class SonetGroupTest extends TestCase
             'TAGS'
         ]);
 
-        $sonetGroupItemResult = $sonetGroupResult->getGroup();
-        self::assertInstanceOf(SonetGroupItemResult::class, $sonetGroupItemResult);
-        self::assertEquals($groupId, $sonetGroupItemResult->ID);
-        self::assertEquals($groupName, $sonetGroupItemResult->NAME);
+        $sonetGroupGetItemResult = $sonetGroupResult->getGroup();
+        self::assertInstanceOf(SonetGroupGetItemResult::class, $sonetGroupGetItemResult);
+        self::assertEquals($groupId, $sonetGroupGetItemResult->ID);
+        self::assertEquals($groupName, $sonetGroupGetItemResult->NAME);
 
         // Clean up
         $this->deleteTestGroup($groupId);
@@ -212,16 +213,17 @@ class SonetGroupTest extends TestCase
 
         $sonetGroupsResult = $this->sonetGroupService->list(
             ['ID' => $groupId],
-            ['ID', 'NAME', 'ACTIVE'],
+            ['ID', 'SITE_ID', 'NAME', 'DESCRIPTION', 'DATE_CREATE', 'DATE_UPDATE', 'DATE_ACTIVITY', 'ACTIVE', 'VISIBLE', 'OPENED', 'CLOSED', 'SUBJECT_ID', 'OWNER_ID', 'KEYWORDS', 'IMAGE_ID', 'NUMBER_OF_MEMBERS', 'INITIATE_PERMS', 'SPAM_PERMS', 'SUBJECT_NAME'],
             false
         );
+           // ['ID', 'NAME', 'ACTIVE'],
 
         self::assertGreaterThanOrEqual(1, count($sonetGroupsResult->getGroups()));
         
-        foreach ($sonetGroupsResult->getGroups() as $sonetGroupItemResult) {
-            self::assertInstanceOf(SonetGroupItemResult::class, $sonetGroupItemResult);
-            self::assertNotNull($sonetGroupItemResult->ID);
-            self::assertNotNull($sonetGroupItemResult->NAME);
+        foreach ($sonetGroupsResult->getGroups() as $sonetGroupListItemResult) {
+            self::assertInstanceOf(SonetGroupListItemResult::class, $sonetGroupListItemResult);
+            self::assertNotNull($sonetGroupListItemResult->id);
+            self::assertNotNull($sonetGroupListItemResult->name);
         }
 
         // Clean up
@@ -250,18 +252,18 @@ class SonetGroupTest extends TestCase
 
         $groupId = $addedItemResult->getId();
 
-        $sonetGroupsResult = $this->sonetGroupService->getGroups(
+        $sonetGetGroupsResult = $this->sonetGroupService->getGroups(
             ['NAME' => 'ASC'],
             ['%NAME' => substr($groupName, 0, 10)],
             false
         );
 
-        self::assertGreaterThanOrEqual(1, count($sonetGroupsResult->getGroups()));
+        self::assertGreaterThanOrEqual(1, count($sonetGetGroupsResult->getGroups()));
         
-        foreach ($sonetGroupsResult->getGroups() as $sonetGroupItemResult) {
-            self::assertInstanceOf(SonetGroupItemResult::class, $sonetGroupItemResult);
-            self::assertNotNull($sonetGroupItemResult->ID);
-            self::assertNotNull($sonetGroupItemResult->NAME);
+        foreach ($sonetGetGroupsResult->getGroups() as $sonetGroupGetItemResult) {
+            self::assertInstanceOf(SonetGroupGetItemResult::class, $sonetGroupGetItemResult);
+            self::assertNotNull($sonetGroupGetItemResult->ID);
+            self::assertNotNull($sonetGroupGetItemResult->NAME);
         }
 
         // Clean up
@@ -299,8 +301,8 @@ class SonetGroupTest extends TestCase
 
         // Verify the update
         $sonetGroupResult = $this->sonetGroupService->get($groupId);
-        $sonetGroupItemResult = $sonetGroupResult->getGroup();
-        self::assertEquals($newName, $sonetGroupItemResult->NAME);
+        $sonetGroupGetItemResult = $sonetGroupResult->getGroup();
+        self::assertEquals($newName, $sonetGroupGetItemResult->NAME);
 
         // Clean up
         $this->deleteTestGroup($groupId);
@@ -442,13 +444,13 @@ class SonetGroupTest extends TestCase
                 false
             );
             
-            foreach ($groupsResult->getGroups() as $sonetGroupItemResult) {
-                if (str_contains($sonetGroupItemResult->NAME, 'Test')) {
+            foreach ($groupsResult->getGroups() as $sonetGroupGetItemResult) {
+                if (str_contains($sonetGroupGetItemResult->NAME, 'Test')) {
                     try {
-                        $this->sonetGroupService->delete($sonetGroupItemResult->ID);
+                        $this->sonetGroupService->delete(intval($sonetGroupGetItemResult->ID));
                     } catch (BaseException $e) {
                         // Ignore individual deletion errors
-                        error_log(sprintf('Warning: Failed to cleanup test group %s: ', $sonetGroupItemResult->NAME) . $e->getMessage());
+                        error_log(sprintf('Warning: Failed to cleanup test group %s: ', $sonetGroupGetItemResult->NAME) . $e->getMessage());
                     }
                 }
             }

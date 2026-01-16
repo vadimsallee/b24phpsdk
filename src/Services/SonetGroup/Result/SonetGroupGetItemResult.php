@@ -16,7 +16,7 @@ namespace Bitrix24\SDK\Services\SonetGroup\Result;
 use Bitrix24\SDK\Core\Result\AbstractItem;
 
 /**
- * Class SonetGroupItemResult
+ * Class SonetGroupGetItemResult
  *
  * @property-read int|null $ID Group identifier
  * @property-read bool|null $ACTIVE Whether the group is active (Y/N)
@@ -78,6 +78,6 @@ use Bitrix24\SDK\Core\Result\AbstractItem;
  * @property-read string|null $GROUP_NAME Group name (for user groups list)
  * @property-read string|null $ROLE User's role in the group (for user groups list)
  */
-class SonetGroupItemResult extends AbstractItem
+class SonetGroupGetItemResult extends AbstractItem
 {
 }
