@@ -16,7 +16,6 @@ namespace Bitrix24\SDK\Services\IMOpenLines\Result;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Result\AbstractResult;
 
-
 class AddedMessageItemResult extends AbstractResult
 {
     /**

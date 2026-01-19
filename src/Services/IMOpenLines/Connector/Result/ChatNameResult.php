@@ -30,12 +30,12 @@ class ChatNameResult extends AbstractResult
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Response format: [SUCCESS] => 1 and [DATA] => Array(...)
         if (isset($result['SUCCESS'])) {
             return (bool)$result['SUCCESS'];
         }
-        
+
         return false;
     }
 }

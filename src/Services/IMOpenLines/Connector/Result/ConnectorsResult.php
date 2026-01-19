@@ -33,14 +33,14 @@ class ConnectorsResult extends AbstractResult
     {
         $connectors = [];
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         foreach ($result as $id => $name) {
             $connectors[] = new ConnectorItemResult([
                 'id' => $id,
                 'name' => $name
             ]);
         }
-        
+
         return $connectors;
     }
 }

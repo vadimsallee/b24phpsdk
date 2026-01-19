@@ -62,8 +62,7 @@ class Network extends AbstractService
         bool   $isMakeUrlPreview = true,
         ?array $attach = null,
         ?array $keyboard = null
-    ): AddedMessageItemResult
-    {
+    ): AddedMessageItemResult {
         return new AddedMessageItemResult(
             $this->core->call(
                 'imopenlines.network.message.add',
