@@ -62,6 +62,7 @@ help:
 	@echo "test-integration-sale-payment-item-basket - run PaymentItemBasket integration tests"
 	@echo "test-integration-sale-payment-item-shipment - run PaymentItemShipment integration tests"
 	@echo "test-integration-sale-property-relation - run PropertyRelation integration tests"
+	@echo "test-integration-scope-lists - run Lists integration tests"
 
 
 .PHONY: docker-init
@@ -222,6 +223,10 @@ test-integration-scope-log:
 .PHONY: test-integration-scope-sale
 test-integration-scope-sale:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_sale
+	
+.PHONY: test-integration-scope-lists
+test-integration-scope-lists:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_lists
 	
 .PHONY: test-integration-scope-sonet-group
 test-integration-scope-sonet-group:
