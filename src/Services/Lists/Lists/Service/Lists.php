@@ -23,7 +23,6 @@ use Bitrix24\SDK\Core\Result\AddedItemResult;
 use Bitrix24\SDK\Core\Result\DeletedItemResult;
 use Bitrix24\SDK\Core\Result\UpdatedItemResult;
 use Bitrix24\SDK\Services\AbstractService;
-use Bitrix24\SDK\Services\Lists\Lists\Result\ListResult;
 use Bitrix24\SDK\Services\Lists\Lists\Result\ListsResult;
 use Bitrix24\SDK\Services\Lists\Lists\Result\IBlockTypeIdResult;
 use Psr\Log\LoggerInterface;
@@ -245,6 +244,9 @@ class Lists extends AbstractService
      *
      * @link https://apidocs.bitrix24.com/api-reference/lists/lists/lists-get-iblock-type-id.html
      *
+     * @param int|null $iblockId Information block identifier
+     * @param string|null $iblockCode Symbolic code of the information block
+     *
      * @throws BaseException
      * @throws TransportException
      */
@@ -253,10 +255,24 @@ class Lists extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/lists/lists/lists-get-iblock-type-id.html',
         'Returns the identifier of the information block type.'
     )]
-    public function getIBlockTypeId(): IBlockTypeIdResult
+    public function getIBlockTypeId(?int $iblockId = null, ?string $iblockCode = null): IBlockTypeIdResult
     {
+        $params = [];
+
+        if ($iblockId !== null) {
+            $params['IBLOCK_ID'] = $iblockId;
+        }
+
+        if ($iblockCode !== null) {
+            $params['IBLOCK_CODE'] = $iblockCode;
+        }
+
+        if (empty($params)) {
+            throw new BaseException('Either IBLOCK_ID or IBLOCK_CODE parameter must be provided');
+        }
+
         return new IBlockTypeIdResult(
-            $this->core->call('lists.get.iblock.type.id')
+            $this->core->call('lists.get.iblock.type.id', $params)
         );
     }
 }

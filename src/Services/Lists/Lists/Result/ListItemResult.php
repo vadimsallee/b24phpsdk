@@ -21,6 +21,7 @@ use Bitrix24\SDK\Core\Result\AbstractItem;
  * @property-read int|null $ID List identifier
  * @property-read string|null $IBLOCK_TYPE_ID Information block type identifier
  * @property-read string|null $IBLOCK_CODE Symbolic code of the information block
+ * @property-read string|null $CODE Symbolic code of the information block (alias for IBLOCK_CODE)
  * @property-read string|null $IBLOCK_ID Information block identifier
  * @property-read string|null $NAME List name
  * @property-read string|null $DESCRIPTION List description
@@ -46,4 +47,14 @@ use Bitrix24\SDK\Core\Result\AbstractItem;
  */
 class ListItemResult extends AbstractItem
 {
+    public function __get($offset)
+    {
+        switch ($offset) {
+            case 'IBLOCK_CODE':
+                // Map IBLOCK_CODE to actual CODE field from API response
+                return $this->data['CODE'] ?? null;
+            default:
+                return parent::__get($offset);
+        }
+    }
 }

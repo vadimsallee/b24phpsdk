@@ -59,7 +59,7 @@ class ListsTest extends TestCase
      */
     public function testCrudOperations(): void
     {
-        $uniqueCode = 'test_list_' . time();
+        $uniqueCode = 'test_list_' . (int)(microtime(true) * 1000000);
         $listFields = [
             'NAME' => 'Test List for SDK Integration',
             'DESCRIPTION' => 'Test list created by SDK integration tests',
@@ -149,7 +149,7 @@ class ListsTest extends TestCase
     public function testGetMultipleLists(): void
     {
         $lists = [];
-        $uniquePrefix = 'test_multi_' . time();
+        $uniquePrefix = 'test_multi_' . (int)(microtime(true) * 1000000);
 
         try {
             // Create multiple test lists
@@ -208,11 +208,45 @@ class ListsTest extends TestCase
      */
     public function testGetIBlockTypeId(): void
     {
-        $blockTypeIdResult = $this->listsService->getIBlockTypeId();
-        $iblockTypeId = $blockTypeIdResult->getIBlockTypeId();
+        // Create a list first to get a valid IBLOCK_ID for testing
+        $uniqueCode = 'test_list_' . (int)(microtime(true) * 1000000);
+        $listFields = [
+            'NAME' => 'Test List for Type ID',
+            'DESCRIPTION' => 'Test list for type ID testing',
+            'SORT' => 100,
+            'BIZPROC' => 'N'
+        ];
 
-        $this->assertIsString($iblockTypeId);
-        $this->assertNotEmpty($iblockTypeId);
+        $addedItemResult = $this->listsService->add(
+            'lists',
+            $uniqueCode,
+            $listFields
+        );
+        $listId = $addedItemResult->getId();
+
+        try {
+            // Test with IBLOCK_ID
+            $blockTypeIdResult = $this->listsService->getIBlockTypeId($listId);
+            $iblockTypeId = $blockTypeIdResult->getIBlockTypeId();
+
+            $this->assertIsString($iblockTypeId);
+            $this->assertNotEmpty($iblockTypeId);
+            $this->assertEquals('lists', $iblockTypeId);
+
+            // Test with IBLOCK_CODE
+            $blockTypeIdResult2 = $this->listsService->getIBlockTypeId(null, $uniqueCode);
+            $iblockTypeId2 = $blockTypeIdResult2->getIBlockTypeId();
+
+            $this->assertIsString($iblockTypeId2);
+            $this->assertNotEmpty($iblockTypeId2);
+            $this->assertEquals('lists', $iblockTypeId2);
+
+            // Test that both methods return the same value
+            $this->assertEquals($iblockTypeId, $iblockTypeId2);
+        } finally {
+            // Clean up
+            $this->listsService->delete('lists', $listId);
+        }
     }
 
     /**
@@ -223,7 +257,7 @@ class ListsTest extends TestCase
      */
     public function testCreateListWithPermissions(): void
     {
-        $uniqueCode = 'test_permissions_' . time();
+        $uniqueCode = 'test_permissions_' . (int)(microtime(true) * 1000000);
         $listFields = [
             'NAME' => 'Test List with Permissions',
             'DESCRIPTION' => 'Test list with custom permissions',

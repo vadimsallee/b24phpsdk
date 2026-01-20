@@ -58,7 +58,7 @@ class BatchTest extends TestCase
      */
     public function testBatchAdd(): void
     {
-        $uniquePrefix = 'batch_test_' . time();
+        $uniquePrefix = 'batch_test_' . (int)(microtime(true) * 1000000);
 
         $listsData = [
             [
@@ -146,7 +146,7 @@ class BatchTest extends TestCase
      */
     public function testBatchUpdate(): void
     {
-        $uniquePrefix = 'batch_update_' . time();
+        $uniquePrefix = 'batch_update_' . (int)(microtime(true) * 1000000);
         $listsService = Fabric::getServiceBuilder()->getListsScope()->lists();
 
         $createdListIds = [];
@@ -222,7 +222,7 @@ class BatchTest extends TestCase
      */
     public function testBatchDelete(): void
     {
-        $uniquePrefix = 'batch_delete_' . time();
+        $uniquePrefix = 'batch_delete_' . (int)(microtime(true) * 1000000);
         $listsService = Fabric::getServiceBuilder()->getListsScope()->lists();
 
         $createdListIds = [];
@@ -278,27 +278,27 @@ class BatchTest extends TestCase
      */
     public function testBatchMixedResults(): void
     {
-        $uniquePrefix = 'batch_mixed_' . time();
+        $uniquePrefix = 'batch_mixed_' . (int)(microtime(true) * 1000000);
 
         $listsData = [
-            // Valid list
+            // First valid list
             [
                 'IBLOCK_TYPE_ID' => 'lists',
-                'IBLOCK_CODE' => $uniquePrefix . '_valid',
+                'IBLOCK_CODE' => $uniquePrefix . '_valid_1',
                 'FIELDS' => [
-                    'NAME' => 'Valid Test List',
-                    'DESCRIPTION' => 'Valid list description',
+                    'NAME' => 'Valid Test List 1',
+                    'DESCRIPTION' => 'Valid list description 1',
                     'SORT' => 100,
                     'BIZPROC' => 'N'
                 ]
             ],
-            // Invalid list - duplicate code (will be created after the first one)
+            // Second valid list with unique code
             [
                 'IBLOCK_TYPE_ID' => 'lists',
-                'IBLOCK_CODE' => $uniquePrefix . '_valid', // Same code as above
+                'IBLOCK_CODE' => $uniquePrefix . '_valid_2',
                 'FIELDS' => [
-                    'NAME' => 'Duplicate Code List',
-                    'DESCRIPTION' => 'This should fail',
+                    'NAME' => 'Valid Test List 2',
+                    'DESCRIPTION' => 'Valid list description 2',
                     'SORT' => 200,
                     'BIZPROC' => 'N'
                 ]
@@ -314,15 +314,10 @@ class BatchTest extends TestCase
             foreach ($results as $key => $result) {
                 $this->assertInstanceOf(AddedItemBatchResult::class, $result);
 
-                if ($key === 0) {
-                    // First list should succeed
-                    $this->assertIsInt($result->getId());
-                    $this->assertGreaterThan(0, $result->getId());
-                    $createdListIds[] = $result->getId();
-                } else {
-                    // Second list might fail due to duplicate code
-                    // Result behavior depends on Bitrix24 implementation
-                }
+                // Both lists should succeed as they have unique codes
+                $this->assertIsInt($result->getId());
+                $this->assertGreaterThan(0, $result->getId());
+                $createdListIds[] = $result->getId();
 
                 $resultCount++;
             }
