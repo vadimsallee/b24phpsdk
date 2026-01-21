@@ -18,6 +18,8 @@ use Bitrix24\SDK\Core\Credentials\Scope;
 use Bitrix24\SDK\Services\AbstractServiceBuilder;
 use Bitrix24\SDK\Services\Lists\Lists\Service\Batch;
 use Bitrix24\SDK\Services\Lists\Lists\Service\Lists;
+use Bitrix24\SDK\Services\Lists\Field\Service\Field;
+use Bitrix24\SDK\Services\Lists\Field\Service\Batch as FieldBatch;
 
 #[ApiServiceBuilderMetadata(new Scope(['lists']))]
 class ListsServiceBuilder extends AbstractServiceBuilder
@@ -30,6 +32,22 @@ class ListsServiceBuilder extends AbstractServiceBuilder
         if (!isset($this->serviceCache[__METHOD__])) {
             $this->serviceCache[__METHOD__] = new Lists(
                 new Batch($this->batch, $this->log),
+                $this->core,
+                $this->log
+            );
+        }
+
+        return $this->serviceCache[__METHOD__];
+    }
+
+    /**
+     * Field service for managing universal list fields
+     */
+    public function field(): Field
+    {
+        if (!isset($this->serviceCache[__METHOD__])) {
+            $this->serviceCache[__METHOD__] = new Field(
+                new FieldBatch($this->batch, $this->log),
                 $this->core,
                 $this->log
             );

@@ -4,6 +4,24 @@
 
 ### Added
 
+- Added service `Services\Lists\Lists\Service\Lists` with support methods,
+  see [lists.* methods](https://github.com/bitrix24/b24phpsdk/issues/360):
+    - `add` creates a universal list, with batch calls support
+    - `update` updates a universal list, with batch calls support
+    - `get` returns data of a universal list or an array of lists, with batch calls support
+    - `delete` deletes a universal list, with batch calls support
+    - `getIBlockTypeId` returns the identifier of the information block type
+- Added service `Services\Lists\Field\Service\Field` with support methods,
+  see [lists.field.* methods](https://github.com/bitrix24/b24phpsdk/issues/360):
+    - `add` creates a field for the universal list, with batch calls support
+    - `update` updates a field of the universal list, with batch calls support
+    - `get` returns data about a field or list of fields
+    - `delete` deletes a field from the universal list, with batch calls support
+    - `types` returns a list of available field types for the list
+    - `addByCode` helper method to create field by iblock code
+    - `updateByCode` helper method to update field by iblock code
+    - `getByCode` helper method to get field(s) by iblock code
+    - `deleteByCode` helper method to delete field by iblock code
 - Added service `Services\SonetGroup\Service\SonetGroup` with support methods,
   see [sonet_group.* methods](https://github.com/bitrix24/b24phpsdk/issues/331):
     - `create` creates a social network group/project
