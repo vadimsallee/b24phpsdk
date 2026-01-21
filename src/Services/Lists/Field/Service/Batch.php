@@ -18,10 +18,8 @@ use Bitrix24\SDK\Attributes\ApiBatchServiceMetadata;
 use Bitrix24\SDK\Core\Credentials\Scope;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Services\Lists\Field\Result\AddedFieldBatchResult;
-use Bitrix24\SDK\Services\Lists\Field\Result\UpdatedFieldBatchResult;
 use Bitrix24\SDK\Core\Result\UpdatedItemBatchResult;
 use Bitrix24\SDK\Core\Result\DeletedItemBatchResult;
-use Bitrix24\SDK\Services\Lists\Field\Result\DeletedFieldBatchResult;
 use Bitrix24\SDK\Services\AbstractBatchService;
 use Generator;
 
