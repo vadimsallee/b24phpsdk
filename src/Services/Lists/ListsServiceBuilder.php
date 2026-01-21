@@ -16,10 +16,6 @@ namespace Bitrix24\SDK\Services\Lists;
 use Bitrix24\SDK\Attributes\ApiServiceBuilderMetadata;
 use Bitrix24\SDK\Core\Credentials\Scope;
 use Bitrix24\SDK\Services\AbstractServiceBuilder;
-use Bitrix24\SDK\Services\Lists\Lists\Service\Batch;
-use Bitrix24\SDK\Services\Lists\Lists\Service\Lists;
-use Bitrix24\SDK\Services\Lists\Field\Service\Field;
-use Bitrix24\SDK\Services\Lists\Field\Service\Batch as FieldBatch;
 
 #[ApiServiceBuilderMetadata(new Scope(['lists']))]
 class ListsServiceBuilder extends AbstractServiceBuilder
@@ -27,11 +23,15 @@ class ListsServiceBuilder extends AbstractServiceBuilder
     /**
      * Lists service for managing universal lists
      */
-    public function lists(): Lists
+    public function lists(): Lists\Service\Lists
     {
         if (!isset($this->serviceCache[__METHOD__])) {
-            $this->serviceCache[__METHOD__] = new Lists(
-                new Batch($this->batch, $this->log),
+            $listsBatch = new Lists\Batch(
+                $this->core,
+                $this->log
+            );
+            $this->serviceCache[__METHOD__] = new Lists\Service\Lists(
+                new Lists\Service\Batch($listsBatch, $this->log),
                 $this->core,
                 $this->log
             );
@@ -43,11 +43,31 @@ class ListsServiceBuilder extends AbstractServiceBuilder
     /**
      * Field service for managing universal list fields
      */
-    public function field(): Field
+    public function field(): Field\Service\Field
     {
         if (!isset($this->serviceCache[__METHOD__])) {
-            $this->serviceCache[__METHOD__] = new Field(
-                new FieldBatch($this->batch, $this->log),
+            $fieldBatch = new Field\Batch(
+                $this->core,
+                $this->log
+            );
+            $this->serviceCache[__METHOD__] = new Field\Service\Field(
+                new Field\Service\Batch($fieldBatch, $this->log),
+                $this->core,
+                $this->log
+            );
+        }
+
+        return $this->serviceCache[__METHOD__];
+    }
+
+    /**
+     * Section service for managing universal list sections
+     */
+    public function section(): Section\Service\Section
+    {
+        if (!isset($this->serviceCache[__METHOD__])) {
+            $this->serviceCache[__METHOD__] = new Section\Service\Section(
+                new Section\Service\Batch($this->batch, $this->log),
                 $this->core,
                 $this->log
             );
@@ -56,3 +76,4 @@ class ListsServiceBuilder extends AbstractServiceBuilder
         return $this->serviceCache[__METHOD__];
     }
 }
+

@@ -72,7 +72,7 @@ class Batch extends AbstractBatchService
     )]
     public function update(array $fields): Generator
     {
-        foreach ($this->batch->addEntityItems('lists.field.update', $fields) as $key => $item) {
+        foreach ($this->batch->updateEntityItems('lists.field.update', $fields) as $key => $item) {
             yield $key => new UpdatedItemBatchResult($item);
         }
     }
@@ -93,7 +93,7 @@ class Batch extends AbstractBatchService
     )]
     public function delete(array $fields): Generator
     {
-        foreach ($this->batch->addEntityItems('lists.field.delete', $fields) as $key => $item) {
+        foreach ($this->batch->deleteEntityItems('lists.field.delete', $fields) as $key => $item) {
             yield $key => new DeletedItemBatchResult($item);
         }
     }

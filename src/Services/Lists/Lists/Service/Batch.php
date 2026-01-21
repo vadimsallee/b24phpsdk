@@ -73,15 +73,7 @@ class Batch extends AbstractBatchService
     )]
     public function update(array $lists): Generator
     {
-        // Convert to proper format for batch operations
-        $batchItems = [];
-        foreach ($lists as $listId => $listData) {
-            $params = $listData;
-            $params['IBLOCK_ID'] = $listId;
-            $batchItems[] = $params;
-        }
-
-        foreach ($this->batch->addEntityItems('lists.update', $batchItems) as $key => $item) {
+        foreach ($this->batch->updateEntityItems('lists.update', $lists) as $key => $item) {
             yield $key => new UpdatedItemBatchResult($item);
         }
     }
@@ -102,7 +94,7 @@ class Batch extends AbstractBatchService
     )]
     public function delete(array $lists): Generator
     {
-        foreach ($this->batch->addEntityItems('lists.delete', $lists) as $key => $item) {
+        foreach ($this->batch->deleteEntityItems('lists.delete', $lists) as $key => $item) {
             yield $key => new DeletedItemBatchResult($item);
         }
     }

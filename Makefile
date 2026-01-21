@@ -63,6 +63,7 @@ help:
 	@echo "test-integration-sale-payment-item-shipment - run PaymentItemShipment integration tests"
 	@echo "test-integration-sale-property-relation - run PropertyRelation integration tests"
 	@echo "test-integration-scope-lists - run Lists integration tests"
+	@echo "test-integration-lists-service - run Lists Service integration tests"
 	@echo "test-integration-lists-field - run Lists Field integration tests"
 
 
@@ -228,6 +229,10 @@ test-integration-scope-sale:
 .PHONY: test-integration-scope-lists
 test-integration-scope-lists:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_lists
+
+.PHONY: test-integration-lists-service
+test-integration-lists-service:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_lists_service
 
 .PHONY: test-integration-lists-field
 test-integration-lists-field:
