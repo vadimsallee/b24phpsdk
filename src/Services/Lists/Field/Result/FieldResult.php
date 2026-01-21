@@ -26,19 +26,12 @@ class FieldResult extends AbstractResult
     /**
      * Get field data
      *
-     * @return FieldItemResult
      * @throws BaseException
      */
     public function field(): FieldItemResult
     {
-        echo "\n\n Field data \n";
-        print_r($this->getCoreResponse()->getResponseData()->getResult());
-        echo "\n\n";
-        
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        if (is_array($result)) {
-            $result = current($result);
-        }
+        $result = current($result);
 
         return new FieldItemResult($result);
     }

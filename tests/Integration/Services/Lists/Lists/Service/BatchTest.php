@@ -311,7 +311,7 @@ class BatchTest extends TestCase
             $results = $this->batchService->add($listsData);
             $resultCount = 0;
 
-            foreach ($results as $key => $result) {
+            foreach ($results as $result) {
                 $this->assertInstanceOf(AddedItemBatchResult::class, $result);
 
                 // Both lists should succeed as they have unique codes

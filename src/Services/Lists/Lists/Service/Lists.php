@@ -267,7 +267,7 @@ class Lists extends AbstractService
             $params['IBLOCK_CODE'] = $iblockCode;
         }
 
-        if (empty($params)) {
+        if ($params === []) {
             throw new BaseException('Either IBLOCK_ID or IBLOCK_CODE parameter must be provided');
         }
 

@@ -49,12 +49,9 @@ class ListItemResult extends AbstractItem
 {
     public function __get($offset)
     {
-        switch ($offset) {
-            case 'IBLOCK_CODE':
-                // Map IBLOCK_CODE to actual CODE field from API response
-                return $this->data['CODE'] ?? null;
-            default:
-                return parent::__get($offset);
-        }
+        return match ($offset) {
+            'IBLOCK_CODE' => $this->data['CODE'] ?? null,
+            default => parent::__get($offset),
+        };
     }
 }

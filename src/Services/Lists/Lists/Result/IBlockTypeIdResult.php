@@ -29,9 +29,6 @@ class IBlockTypeIdResult extends AbstractResult
     public function getIBlockTypeId(): string
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        if (is_array($result)) {
-            return isset($result[0]) ? (string)$result[0] : '';
-        }
-        return (string)$result;
+        return isset($result[0]) ? (string)$result[0] : '';
     }
 }

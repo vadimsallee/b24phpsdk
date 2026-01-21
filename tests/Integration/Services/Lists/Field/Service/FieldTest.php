@@ -45,7 +45,9 @@ class FieldTest extends TestCase
     use CustomBitrix24Assertions;
 
     private Field $fieldService;
+
     private int $testListId;
+
     private string $testListCode;
 
     /**
@@ -67,13 +69,13 @@ class FieldTest extends TestCase
             'BIZPROC' => 'N'
         ];
 
-        $addedList = Fabric::getServiceBuilder()->getListsScope()->lists()->add(
+        $addedItemResult = Fabric::getServiceBuilder()->getListsScope()->lists()->add(
             'lists',
             $uniqueCode,
             $listFields
         );
 
-        $this->testListId = $addedList->getId();
+        $this->testListId = $addedItemResult->getId();
         $this->testListCode = $uniqueCode;
     }
 
@@ -334,11 +336,11 @@ class FieldTest extends TestCase
 
         } finally {
             // Clean up: delete all test fields
-            foreach ($fieldsToCleanup as $fieldId) {
+            foreach ($fieldsToCleanup as $fieldToCleanup) {
                 try {
                     $this->fieldService->delete(
                         'lists',
-                        $fieldId,
+                        $fieldToCleanup,
                         $this->testListId
                     );
                 } catch (\Exception) {
@@ -356,12 +358,12 @@ class FieldTest extends TestCase
      */
     public function testGetFieldTypes(): void
     {
-        $typesResult = $this->fieldService->types(
+        $fieldTypesResult = $this->fieldService->types(
             'lists',
             $this->testListId
         );
 
-        $types = $typesResult->types();
+        $types = $fieldTypesResult->types();
 
         $this->assertIsArray($types);
         $this->assertNotEmpty($types);

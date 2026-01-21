@@ -24,17 +24,11 @@ class AddedFieldResult extends AbstractResult
 {
     /**
      * Get created field identifier
-     *
-     * @return string
      */
     public function getId(): string
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
-        echo "\n\n AddedFieldResult \n";
-        print_r($result);
-        echo "\n\n";
-        
+
         return (string) $result[0];
     }
 }

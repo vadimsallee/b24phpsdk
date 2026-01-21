@@ -33,18 +33,10 @@ class FieldsResult extends AbstractResult
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
 
-        echo "\n\n Fields \n";
-        print_r($result);
-        echo "\n\n";
-
         $fields = [];
 
-        if (is_array($result)) {
-            foreach ($result as $fieldData) {
-                if (is_array($fieldData)) {
-                    $fields[] = new FieldItemResult($fieldData);
-                }
-            }
+        foreach ($result as $fieldData) {
+            $fields[] = new FieldItemResult($fieldData);
         }
 
         return $fields;

@@ -41,8 +41,8 @@ class BatchTest extends TestCase
     use CustomBitrix24Assertions;
 
     private Batch $batchService;
+
     private int $testListId;
-    private string $testListCode;
 
     /**
      * Set up test environment
@@ -63,14 +63,13 @@ class BatchTest extends TestCase
             'BIZPROC' => 'N'
         ];
 
-        $addedList = Fabric::getServiceBuilder()->getListsScope()->lists()->add(
+        $addedItemResult = Fabric::getServiceBuilder()->getListsScope()->lists()->add(
             'lists',
             $uniqueCode,
             $listFields
         );
 
-        $this->testListId = $addedList->getId();
-        $this->testListCode = $uniqueCode;
+        $this->testListId = $addedItemResult->getId();
     }
 
     /**
@@ -144,7 +143,7 @@ class BatchTest extends TestCase
 
             $this->assertCount(3, $results);
 
-            foreach ($results as $index => $result) {
+            foreach ($results as $result) {
                 $this->assertInstanceOf(AddedFieldBatchResult::class, $result);
                 $this->assertNotEmpty($result->getId());
                 $this->assertStringStartsWith('PROPERTY_', $result->getId());

@@ -31,10 +31,6 @@ class FieldTypesResult extends AbstractResult
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
 
-        echo "\n\n Field types \n";
-        print_r($result);
-        echo "\n\n";
-
         return is_array($result) ? $result : [];
     }
 }

@@ -25,12 +25,12 @@ class AddedFieldBatchResult
     public function __construct(private readonly ResponseData $responseData)
     {
     }
-    
+
     public function getResponseData(): ResponseData
     {
         return $this->responseData;
     }
-    
+
     public function getId(): string
     {
         return (string)$this->getResponseData()->getResult()[0];
