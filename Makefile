@@ -65,6 +65,8 @@ help:
 	@echo "test-integration-scope-lists - run Lists integration tests"
 	@echo "test-integration-lists-service - run Lists Service integration tests"
 	@echo "test-integration-lists-field - run Lists Field integration tests"
+	@echo "test-integration-lists-section - run Lists Section integration tests"
+	@echo "test-integration-lists-element - run Lists Element integration tests"
 
 
 .PHONY: docker-init
@@ -237,6 +239,14 @@ test-integration-lists-service:
 .PHONY: test-integration-lists-field
 test-integration-lists-field:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_lists_field
+
+.PHONY: test-integration-lists-section
+test-integration-lists-section:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_lists_section
+
+.PHONY: test-integration-lists-element
+test-integration-lists-element:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_lists_element
 	
 .PHONY: test-integration-scope-sonet-group
 test-integration-scope-sonet-group:

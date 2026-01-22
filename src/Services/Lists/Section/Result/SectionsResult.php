@@ -29,10 +29,6 @@ class SectionsResult extends AbstractResult
      */
     public function getSections(): array
     {
-        echo "\n\n Тип данных \n";
-        print_r($this->getCoreResponse()->getResponseData()->getResult());
-        echo "\n\n";
-
         $sections = [];
         $result = $this->getCoreResponse()->getResponseData()->getResult();
 

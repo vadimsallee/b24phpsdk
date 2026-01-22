@@ -15,7 +15,6 @@ namespace Bitrix24\SDK\Services\Lists\Section\Service;
 
 use Bitrix24\SDK\Attributes\ApiBatchMethodMetadata;
 use Bitrix24\SDK\Attributes\ApiBatchServiceMetadata;
-use Bitrix24\SDK\Core\Contracts\BatchOperationsInterface;
 use Bitrix24\SDK\Core\Credentials\Scope;
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Result\AddedItemBatchResult;
@@ -23,6 +22,7 @@ use Bitrix24\SDK\Core\Result\DeletedItemBatchResult;
 use Bitrix24\SDK\Core\Result\UpdatedItemBatchResult;
 use Bitrix24\SDK\Services\AbstractBatchService;
 use Bitrix24\SDK\Services\Lists\Section\Result\SectionItemResult;
+use Bitrix24\SDK\Services\Lists\Section\Batch as SectionBatch;
 use Generator;
 use Psr\Log\LoggerInterface;
 
@@ -32,61 +32,9 @@ class Batch extends AbstractBatchService
     /**
      * Batch constructor.
      */
-    public function __construct(BatchOperationsInterface $batch, LoggerInterface $log)
+    public function __construct(private readonly SectionBatch $sectionBatch, LoggerInterface $logger)
     {
-        parent::__construct($batch, $log);
-    }
-
-    /**
-     * Batch list method for list sections
-     *
-     * @param string $iblockTypeId Information block type identifier
-     * @param int|string $iblockId Information block identifier or code
-     * @param array $filter Filter for sections
-     * @param array $select Fields to select
-     * @param string|null $iblockCode Information block code
-     *
-     * @return Generator<int, SectionItemResult, mixed, mixed>
-     *
-     * @throws BaseException
-     */
-    #[ApiBatchMethodMetadata(
-        'lists.section.get',
-        'https://apidocs.bitrix24.com/api-reference/lists/sections/lists-section-get.html',
-        'Returns a section or a list of sections.'
-    )]
-    public function list(
-        string $iblockTypeId,
-        int|string $iblockId,
-        array $filter = [],
-        array $select = [],
-        ?string $iblockCode = null
-    ): Generator {
-        $params = [
-            'IBLOCK_TYPE_ID' => $iblockTypeId,
-        ];
-
-        if (is_int($iblockId)) {
-            $params['IBLOCK_ID'] = $iblockId;
-        } else {
-            $params['IBLOCK_CODE'] = $iblockId;
-        }
-
-        if ($iblockCode !== null) {
-            $params['IBLOCK_CODE'] = $iblockCode;
-        }
-
-        if ($filter !== []) {
-            $params['FILTER'] = $filter;
-        }
-
-        if ($select !== []) {
-            $params['SELECT'] = $select;
-        }
-
-        foreach ($this->batch->getTraversableList('lists.section.get', [], [], [], null, $params) as $key => $value) {
-            yield $key => new SectionItemResult($value);
-        }
+        parent::__construct($this->sectionBatch, $logger);
     }
 
     /**
@@ -136,7 +84,7 @@ class Batch extends AbstractBatchService
     )]
     public function update(array $sections): Generator
     {
-        foreach ($this->batch->updateEntityItems('lists.section.update', $sections) as $key => $item) {
+        foreach ($this->sectionBatch->updateEntityItems('lists.section.update', $sections) as $key => $item) {
             yield $key => new UpdatedItemBatchResult($item);
         }
     }
@@ -157,7 +105,7 @@ class Batch extends AbstractBatchService
     )]
     public function delete(array $sections): Generator
     {
-        foreach ($this->batch->deleteEntityItems('lists.section.delete', $sections) as $key => $item) {
+        foreach ($this->sectionBatch->deleteEntityItems('lists.section.delete', $sections) as $key => $item) {
             yield $key => new DeletedItemBatchResult($item);
         }
     }

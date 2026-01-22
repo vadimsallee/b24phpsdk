@@ -22,6 +22,19 @@
     - `updateByCode` helper method to update field by iblock code
     - `getByCode` helper method to get field(s) by iblock code
     - `deleteByCode` helper method to delete field by iblock code
+- Added service `Services\Lists\Section\Service\Section` with support methods,
+  see [lists.section.* methods](https://github.com/bitrix24/b24phpsdk/issues/360):
+    - `add` creates a section for the universal list, with batch calls support
+    - `update` updates a section of the universal list, with batch calls support
+    - `get` returns data about a section or list of sections
+    - `delete` deletes a section from the universal list, with batch calls support
+- Added service `Services\Lists\Element\Service\Element` with support methods,
+  see [lists.element.* methods](https://github.com/bitrix24/b24phpsdk/issues/360):
+    - `add` creates an element for the universal list, with batch calls support
+    - `update` updates an element of the universal list, with batch calls support
+    - `get` returns data about an element or list of elements, with batch calls support
+    - `delete` deletes an element from the universal list, with batch calls support
+    - `getFileUrl` returns file URL from element field
 - Added service `Services\SonetGroup\Service\SonetGroup` with support methods,
   see [sonet_group.* methods](https://github.com/bitrix24/b24phpsdk/issues/331):
     - `create` creates a social network group/project

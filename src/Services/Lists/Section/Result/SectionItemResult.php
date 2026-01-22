@@ -27,6 +27,7 @@ use Carbon\CarbonImmutable;
  * @property-read CarbonImmutable $TIMESTAMP_X
  * @property-read int $SORT
  * @property-read string $NAME
+ * @property-read string $DESCRIPTION
  * @property-read bool $ACTIVE               // Y/N -> bool
  * @property-read bool $GLOBAL_ACTIVE        // Y/N -> bool
  * @property-read int $LEFT_MARGIN
@@ -39,16 +40,4 @@ use Carbon\CarbonImmutable;
  */
 class SectionItemResult extends AbstractItem
 {
-    public function __get($offset)
-    {
-        return match ($offset) {
-            'ID' => $this->data[$offset] ? (int)$this->data[$offset] : null,
-            'SORT', 'LEFT_MARGIN', 'RIGHT_MARGIN', 'DEPTH_LEVEL', 'MODIFIED_BY', 'CREATED_BY' => $this->data[$offset] ? (int)$this->data[$offset] : null,
-            'IBLOCK_SECTION_ID' => $this->data[$offset] !== null ? (int)$this->data[$offset] : null,
-            'ACTIVE', 'GLOBAL_ACTIVE' => ($this->data[$offset] ?? 'N') === 'Y',
-            'TIMESTAMP_X' => isset($this->data[$offset]) ? CarbonImmutable::createFromFormat('m/d/Y h:i:s a', $this->data[$offset]) : null,
-            'DATE_CREATE' => isset($this->data[$offset]) ? CarbonImmutable::createFromFormat('m/d/Y h:i:s a', $this->data[$offset]) : null,
-            default => $this->data[$offset] ?? null,
-        };
-    }
 }

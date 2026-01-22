@@ -66,8 +66,32 @@ class ListsServiceBuilder extends AbstractServiceBuilder
     public function section(): Section\Service\Section
     {
         if (!isset($this->serviceCache[__METHOD__])) {
+            $sectionBatch = new Section\Batch(
+                $this->core,
+                $this->log
+            );
             $this->serviceCache[__METHOD__] = new Section\Service\Section(
-                new Section\Service\Batch($this->batch, $this->log),
+                new Section\Service\Batch($sectionBatch, $this->log),
+                $this->core,
+                $this->log
+            );
+        }
+
+        return $this->serviceCache[__METHOD__];
+    }
+
+    /**
+     * Element service for managing universal list elements
+     */
+    public function element(): Element\Service\Element
+    {
+        if (!isset($this->serviceCache[__METHOD__])) {
+            $elementBatch = new Element\Batch(
+                $this->core,
+                $this->log
+            );
+            $this->serviceCache[__METHOD__] = new Element\Service\Element(
+                new Element\Service\Batch($elementBatch, $this->log),
                 $this->core,
                 $this->log
             );
@@ -76,4 +100,3 @@ class ListsServiceBuilder extends AbstractServiceBuilder
         return $this->serviceCache[__METHOD__];
     }
 }
-

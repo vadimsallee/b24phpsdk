@@ -1,25 +1,45 @@
 <?php
 
+/**
+ * This file is part of the bitrix24-php-sdk package.
+ *
+ * © Sally Fancen <vadimsallee@gmail.com>
+ *
+ * For the full copyright and license information, please view the MIT-LICENSE.txt
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
-namespace Bitrix24\SDK\Services\Lists\Lists;
+namespace Bitrix24\SDK\Services\Lists\Section;
 
 use Bitrix24\SDK\Core\Exceptions\BaseException;
 use Bitrix24\SDK\Core\Exceptions\InvalidArgumentException;
+use Generator;
 
 /**
- * Custom Batch implementation for Lists API
+ * Custom Batch implementation for Section API
  *
- * The Lists API has specific requirements for batch operations:
- * - Uses 'FIELDS' (uppercase) instead of 'fields' for update operations
- * - Uses complex IDs with IBLOCK_TYPE_ID and IBLOCK_ID for delete operations
+ * The Section API has specific requirements for batch operations:
+ * - Update operations work with specific section structure
+ * - Delete operations require section identification parameters
  */
 class Batch extends \Bitrix24\SDK\Core\Batch
 {
     /**
-     * Update entity items with Lists API specific format
+     * Update entity items with Section API specific format
+     *
+     * Update elements in array with structure:
+     * element_id => [
+     *  'IBLOCK_TYPE_ID' => string,
+     *  'IBLOCK_ID' => int,              // or use IBLOCK_CODE
+     *  'SECTION_ID' => int,             // or use SECTION_CODE
+     *  'FIELDS' => [],                  // Section fields to update
+     *  'IBLOCK_CODE' => string,         // optional
+     *  'SECTION_CODE' => string         // optional
+     * ]
      */
-    public function updateEntityItems(string $apiMethod, array $entityItems): \Generator
+    public function updateEntityItems(string $apiMethod, array $entityItems): Generator
     {
         $this->logger->debug(
             'updateEntityItems.start',
@@ -38,7 +58,6 @@ class Batch extends \Bitrix24\SDK\Core\Batch
                 }
 
                 $commandParams = $entityItem;
-                $commandParams['IBLOCK_ID'] = $entityId;
 
                 $this->registerCommand($apiMethod, $commandParams);
             }
@@ -59,15 +78,24 @@ class Batch extends \Bitrix24\SDK\Core\Batch
     }
 
     /**
-     * Delete entity items with Lists API specific format
+     * Delete entity items with Section API specific format
+     *
+     * Delete elements with structure:
+     * [
+     *  'IBLOCK_TYPE_ID' => string,
+     *  'IBLOCK_ID' => int,              // or use IBLOCK_CODE
+     *  'SECTION_ID' => int,             // or use SECTION_CODE
+     *  'IBLOCK_CODE' => string,         // optional
+     *  'SECTION_CODE' => string         // optional
+     * ]
      */
-    public function deleteEntityItems(string $apiMethod, array $entityIds, ?array $additionalParameters = null): \Generator
+    public function deleteEntityItems(string $apiMethod, array $entityItems, ?array $additionalParameters = null): Generator
     {
         $this->logger->debug(
             'deleteEntityItems.start',
             [
                 'apiMethod' => $apiMethod,
-                'entityItems' => $entityIds,
+                'entityItems' => $entityItems,
                 'additionalParameters' => $additionalParameters,
             ]
         );
@@ -75,28 +103,16 @@ class Batch extends \Bitrix24\SDK\Core\Batch
         try {
             $this->clearCommands();
 
-            foreach ($entityIds as $entityId) {
-                if (!is_array($entityId)) {
-                    throw new InvalidArgumentException(sprintf('invalid type «%s» of entity id «%s»', gettype($entityId), $entityId));
+            foreach ($entityItems as $entityItem) {
+                if (!is_array($entityItem)) {
+                    throw new InvalidArgumentException(sprintf('invalid type «%s» of entity item', gettype($entityItem)));
                 }
 
-                if (!array_key_exists('IBLOCK_TYPE_ID', $entityId)) {
-                    throw new InvalidArgumentException('array key «IBLOCK_TYPE_ID» not found in entity id');
+                if (!array_key_exists('IBLOCK_TYPE_ID', $entityItem)) {
+                    throw new InvalidArgumentException('array key «IBLOCK_TYPE_ID» not found in entity item');
                 }
 
-                if (!array_key_exists('IBLOCK_ID', $entityId)) {
-                    throw new InvalidArgumentException('array key «IBLOCK_ID» not found in entity id');
-                }
-
-                $commandParams = [
-                    'IBLOCK_TYPE_ID' => $entityId['IBLOCK_TYPE_ID'],
-                    'IBLOCK_ID' => $entityId['IBLOCK_ID'],
-                ];
-
-                // Add ELEMENT_ID if provided
-                if (array_key_exists('ELEMENT_ID', $entityId)) {
-                    $commandParams['ELEMENT_ID'] = $entityId['ELEMENT_ID'];
-                }
+                $commandParams = $entityItem;
 
                 $this->registerCommand($apiMethod, $commandParams);
             }
