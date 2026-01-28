@@ -127,7 +127,7 @@ class BatchTest extends TestCase
         // Создаем несколько тестовых заказов
         $personTypeId = $this->getPersonTypeId();
         $items = [];
-        for ($i = 1; $i < 10; $i++) {
+        for ($i = 1; $i < 53; $i++) {
             $items[] = [
                 'lid' => 's1',
                 'personTypeId' => $personTypeId,
