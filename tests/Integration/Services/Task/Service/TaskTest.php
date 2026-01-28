@@ -317,7 +317,7 @@ class TaskTest extends TestCase
     protected function normalizeFieldKeys(array $fields): array {
         $result = [];
         foreach ($fields as $key => $value) {
-            if (strpos($key, 'UF_') === 0 && !in_array($key, ['UF_CRM_TASK', 'UF_TASK_WEBDAV_FILES','UF_MAIL_MESSAGE'])) {
+            if (str_starts_with($key, 'UF_') && !in_array($key, ['UF_CRM_TASK', 'UF_TASK_WEBDAV_FILES','UF_MAIL_MESSAGE'])) {
 
                 continue;
             }
