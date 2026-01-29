@@ -1,6 +1,6 @@
 # b24-php-sdk change log
 
-## Upcoming 1.10.0 - 2026.01.01
+## 1.10.0 - 2026.02.01
 
 ### Added
 
