@@ -81,6 +81,15 @@
     - `sendStatusDelivery` method sends message delivery status
     - `sendStatusReading` method sends message reading status
     - `setChatName` method sets chat name
+
+### Statistics
+
+```
+Bitrix24 API-methods count: 1165
+Supported in bitrix24-php-sdk methods count: 697
+Coverage percentage: 59.83% 🚀
+Supported in bitrix24-php-sdk methods with batch wrapper count: 91
+```
     
 ## 1.9.0 - 2025.12.01
 
