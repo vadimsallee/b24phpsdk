@@ -19,7 +19,7 @@ use Bitrix24\SDK\Core\Result\AbstractItem;
  * Class StatusItemResult
  *
  * Represents a single status item from imconnector.status method
- * 
+ *
  * @property-read string $LINE
  * @property-read string $CONNECTOR
  * @property-read bool   $CONFIGURED

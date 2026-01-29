@@ -128,7 +128,8 @@ class Connector extends AbstractService
     public function status(string $line, string $connector): StatusResult
     {
         return new StatusResult(
-            $this->core->call('imconnector.status',
+            $this->core->call(
+                'imconnector.status',
                 [
                     'LINE' => $line,
                     'CONNECTOR' => $connector

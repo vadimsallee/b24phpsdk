@@ -30,12 +30,12 @@ class RegisterResult extends AbstractResult
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Response format: [result] => 1
         if (isset($result['result'])) {
             return (bool)$result['result'];
         }
-        
+
         return false;
     }
 }

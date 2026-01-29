@@ -30,15 +30,15 @@ class SendMessagesResult extends AbstractResult
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Response format: [SUCCESS] => 1
         if (isset($result['SUCCESS'])) {
             return (bool)$result['SUCCESS'];
         }
-        
+
         return false;
     }
-    
+
     /**
      * Get operation result data
      *
@@ -51,14 +51,14 @@ class SendMessagesResult extends AbstractResult
     {
         return $this->getCoreResponse()->getResponseData()->getResult();
     }
-    
+
     /**
      * Get result data
      */
     public function getData(): ?array
     {
         $result = $this->getResult();
-        
+
         return $result['DATA'] ?? null;
     }
 }
