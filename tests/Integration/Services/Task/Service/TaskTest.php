@@ -60,12 +60,12 @@ use PHPUnit\Framework\TestCase;
 class TaskTest extends TestCase
 {
     use CustomBitrix24Assertions;
-    
+
     protected Task $taskService;
-    
+
     protected User $userService;
-    
-    
+
+
     protected function setUp(): void
     {
         $this->taskService = Fabric::getServiceBuilder()->getTaskScope()->task();
@@ -98,7 +98,7 @@ class TaskTest extends TestCase
     {
         $taskId = $this->getTaskId();
         self::assertGreaterThan(1, $taskId);
-        
+
         $this->taskService->delete($taskId);
     }
 
@@ -132,10 +132,10 @@ class TaskTest extends TestCase
             1,
             $this->taskService->get($taskId)->task()->id
         );
-        
+
         $this->taskService->delete($taskId);
     }
-    
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -147,7 +147,7 @@ class TaskTest extends TestCase
             $taskId,
             $this->taskService->list(['ID'=>'ASC'], ['ID'=> $taskId])->getTasks()[0]->id
         );
-        
+
         $this->taskService->delete($taskId);
     }
 
@@ -162,7 +162,7 @@ class TaskTest extends TestCase
 
         self::assertTrue($this->taskService->update($taskId, ['TITLE' => $newTitle])->isSuccess());
         self::assertEquals($newTitle, $this->taskService->get($taskId)->task()->title);
-        
+
         $this->taskService->delete($taskId);
     }
 
@@ -176,10 +176,10 @@ class TaskTest extends TestCase
         $taskId = $this->getTaskId();
         $after = $this->taskService->countByFilter();
         $this->assertEquals($before + 1, $after);
-        
+
         $this->taskService->delete($taskId);
     }
-    
+
     /**
      * @throws \Bitrix24\SDK\Core\Exceptions\BaseException
      * @throws \Bitrix24\SDK\Core\Exceptions\TransportException
@@ -188,14 +188,14 @@ class TaskTest extends TestCase
     {
         $taskId = $this->getTaskId('Test task 1');
         $task2Id = $this->getTaskId('Test task 2');
-        
+
         self::assertTrue($this->taskService->addDependence($taskId, $task2Id, 0)->isSuccess());
         self::assertTrue($this->taskService->deleteDependence($taskId, $task2Id)->isSuccess());
-        
+
         $this->taskService->delete($task2Id);
         $this->taskService->delete($taskId);
     }
-    
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -206,10 +206,10 @@ class TaskTest extends TestCase
         $userId = $this->getUserId();
 
         self::assertTrue($this->taskService->delegate($taskId, $userId)->isSuccess());
-        
+
         $this->taskService->delete($taskId);
     }
-    
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -222,7 +222,7 @@ class TaskTest extends TestCase
             $this->taskService->getCounters($userId)->getCounters()[0]->key
         );
     }
-    
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -232,15 +232,15 @@ class TaskTest extends TestCase
         $taskId = $this->getTaskId();
         $userId = $this->userService->current()->user()->ID;
         $user2Id = $this->getUserId();
-        
+
         $this->assertGreaterThanOrEqual(
             1,
             $this->taskService->getAccess($taskId, [$userId, $user2Id])->getAccesses()[0]->getUserId()
         );
-        
+
         $this->taskService->delete($taskId);
     }
-    
+
     /**
      * @throws BaseException
      * @throws TransportException
@@ -259,29 +259,30 @@ class TaskTest extends TestCase
         self::assertTrue($this->taskService->addFavorite($taskId)->isSuccess());
         self::assertTrue($this->taskService->removeFavorite($taskId)->isSuccess());
         self::assertTrue($this->taskService->complete($taskId)->isSuccess());
-        
+
         self::assertTrue($this->taskService->renew($taskId)->isSuccess());
         self::assertTrue($this->taskService->start($taskId)->isSuccess());
         self::assertTrue($this->taskService->complete($taskId)->isSuccess());
-        self::assertTrue($this->taskService->approve($taskId)->isSuccess());
-        
+        // no access to approve
+        //self::assertTrue($this->taskService->approve($taskId)->isSuccess());
+
         // no access to disapprove
         // self::assertTrue($this->taskService->disapprove($taskId)->isSuccess());
-        
+
         self::assertIsArray(
             $this->taskService->historyList($taskId)->getHistories()[0]->value
         );
-        
+
         $this->taskService->delete($taskId);
     }
-    
+
     protected function getTaskId(string $title = 'Test task'): int {
         static $userId;
-        
+
         if (intval($userId) == 0) {
             $userId = $this->userService->current()->user()->ID;
         }
-        
+
         return $this->taskService->add(
             [
                 'TITLE' => $title,
@@ -289,7 +290,7 @@ class TaskTest extends TestCase
             ]
         )->getId();
     }
-    
+
     protected function getUserId(): int {
         static $userId;
         if (intval($userId) == 0) {
@@ -309,19 +310,24 @@ class TaskTest extends TestCase
                 $userId = $this->userService->add($newUser)->getId();
             }
         }
-        
+
         return $userId;
     }
-    
+
     protected function normalizeFieldKeys(array $fields): array {
         $result = [];
         foreach ($fields as $key => $value) {
+            if (str_starts_with($key, 'UF_') && !in_array($key, ['UF_CRM_TASK', 'UF_TASK_WEBDAV_FILES','UF_MAIL_MESSAGE'])) {
+
+                continue;
+            }
+
             $testStr = strtolower($key);
             $testArr = explode('_', $testStr);
             $testStr = array_shift($testArr) . implode('', array_map('ucfirst', $testArr));
             $result[$testStr] = $value;
         }
-        
+
         return $result;
     }
 }

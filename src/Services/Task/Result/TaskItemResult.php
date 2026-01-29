@@ -22,6 +22,7 @@ use Carbon\CarbonImmutable;
  *
  * @property-read int $id
  * @property-read int|null $parentId
+ * @property-read int|null $chatId
  * @property-read string $title
  * @property-read string|null $description
  * @property-read string|null $mark

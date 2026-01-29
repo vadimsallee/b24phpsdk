@@ -26,6 +26,7 @@ $finder = Finder::create()
     ->in(__DIR__ . '/src/Services/Calendar/')
     ->in(__DIR__ . '/src/Services/Lists/')
     ->in(__DIR__ . '/src/Services/SonetGroup/')
+    ->in(__DIR__ . '/src/Services/IMOpenLines/')
     ->name('*.php')
     ->exclude(['vendor', 'storage', 'docker', 'docs']) // Exclude directories
     ->ignoreDotFiles(true)

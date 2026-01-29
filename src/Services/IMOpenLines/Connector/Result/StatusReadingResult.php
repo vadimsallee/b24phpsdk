@@ -30,12 +30,12 @@ class StatusReadingResult extends AbstractResult
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Response format: [SUCCESS] => 1
         if (isset($result['SUCCESS'])) {
             return (bool)$result['SUCCESS'];
         }
-        
+
         return false;
     }
 }

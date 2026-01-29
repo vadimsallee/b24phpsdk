@@ -30,12 +30,12 @@ class ActivateResult extends AbstractResult
     public function isSuccess(): bool
     {
         $result = $this->getCoreResponse()->getResponseData()->getResult();
-        
+
         // Response format: [0] => 1
         if (isset($result[0])) {
             return (bool)$result[0];
         }
-        
+
         return false;
     }
 }
