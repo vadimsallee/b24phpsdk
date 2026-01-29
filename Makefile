@@ -58,6 +58,7 @@ help:
 	@echo "test-integration-sale-delivery - run Delivery integration tests"
 	@echo "test-integration-sale-delivery-extra-service - run DeliveryExtraService integration tests"
 	@echo "test-integration-scope-paysystem - run Payment System integration tests"
+	@echo "test-integration-scope-im-open-lines-connector - run IMOpenLines Connector integration tests"
 	@echo "test-integration-sale-payment-item-basket - run PaymentItemBasket integration tests"
 	@echo "test-integration-sale-payment-item-shipment - run PaymentItemShipment integration tests"
 	@echo "test-integration-sale-property-relation - run PropertyRelation integration tests"
@@ -186,6 +187,26 @@ test-integration-paysystem-settings:
 test-integration-scope-im-open-lines:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_im_open_lines
 
+.PHONY: test-integration-scope-im-open-lines-connector
+test-integration-scope-im-open-lines-connector:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_im_open_lines_connector
+
+.PHONY: test-integration-im-open-lines-config
+test-integration-im-open-lines-config:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_im_open_lines_config
+
+.PHONY: test-integration-im-open-lines-crm-chat
+test-integration-im-open-lines-crm-chat:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_im_open_lines_crm_chat
+
+.PHONY: test-integration-im-open-lines-session
+test-integration-im-open-lines-session:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_im_open_lines_session
+
+.PHONY: test-integration-im-open-lines-operator
+test-integration-im-open-lines-operator:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_im_open_lines_operator
+
 .PHONY: test-integration-scope-user
 test-integration-scope-user:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_user
@@ -217,6 +238,10 @@ test-integration-scope-log:
 .PHONY: test-integration-scope-sale
 test-integration-scope-sale:
 	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_sale
+	
+.PHONY: test-integration-scope-sonet-group
+test-integration-scope-sonet-group:
+	docker-compose run --rm php-cli vendor/bin/phpunit --testsuite integration_tests_scope_sonet_group
 
 .PHONY: test-integration-scope-disk
 test-integration-scope-disk:
