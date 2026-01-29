@@ -90,7 +90,7 @@ class Bot extends AbstractService
      *
      * @param int    $chatId Chat identifier
      * @param int    $userId User identifier to whom the conversation is being redirected
-     * @param string $leave  Y/N. If N is specified, the chatbot will not leave this chat after redirection and will remain until the user confirms
+     * @param bool   $leave If false is specified, the chatbot will not leave this chat after redirection and will remain until the user confirms
      *
      * @throws BaseException
      * @throws TransportException
@@ -100,13 +100,14 @@ class Bot extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/imopenlines/openlines/chat-bots/imopenlines-bot-session-transfer.html',
         'Transfers the conversation to a specific operator by user ID'
     )]
-    public function transferToUser(int $chatId, int $userId, string $leave = 'N'): EmptyResult
+    public function transferToUser(int $chatId, int $userId, bool $leave = false): EmptyResult
     {
+        $leaveStr = ($leave) ? 'Y' : 'N';
         return new EmptyResult(
             $this->core->call('imopenlines.bot.session.transfer', [
                 'CHAT_ID' => $chatId,
                 'USER_ID' => $userId,
-                'LEAVE' => $leave,
+                'LEAVE' => $leaveStr,
             ])
         );
     }
@@ -116,9 +117,9 @@ class Bot extends AbstractService
      *
      * @link https://apidocs.bitrix24.com/api-reference/imopenlines/openlines/chat-bots/imopenlines-bot-session-transfer.html
      *
-     * @param int    $chatId  Chat identifier
-     * @param int    $queueId Queue identifier to which the conversation is being redirected
-     * @param string $leave   Y/N. If N is specified, the chatbot will not leave this chat after redirection and will remain until the user confirms
+     * @param int  $chatId  Chat identifier
+     * @param int  $queueId Queue identifier to which the conversation is being redirected
+     * @param bool $leave If false is specified, the chatbot will not leave this chat after redirection and will remain until the user confirms
      *
      * @throws BaseException
      * @throws TransportException
@@ -128,13 +129,14 @@ class Bot extends AbstractService
         'https://apidocs.bitrix24.com/api-reference/imopenlines/openlines/chat-bots/imopenlines-bot-session-transfer.html',
         'Transfers the conversation to another open line queue'
     )]
-    public function transferToQueue(int $chatId, int $queueId, string $leave = 'N'): EmptyResult
+    public function transferToQueue(int $chatId, int $queueId, bool $leave = false): EmptyResult
     {
+        $leaveStr = ($leave) ? 'Y' : 'N';
         return new EmptyResult(
             $this->core->call('imopenlines.bot.session.transfer', [
                 'CHAT_ID' => $chatId,
                 'QUEUE_ID' => $queueId,
-                'LEAVE' => $leave,
+                'LEAVE' => $leaveStr,
             ])
         );
     }
